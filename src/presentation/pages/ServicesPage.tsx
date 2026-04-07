@@ -1,0 +1,209 @@
+import { useEffect, useMemo, useState } from 'react'
+
+import type { Service } from '@domain/entities'
+import { serviceRepository } from '@infra/mock/repositories'
+import { ServiceFormPanel } from '@presentation/components/services/ServiceFormPanel'
+import type { ServiceFormValues } from '@presentation/components/services/service-form-schema'
+import { ServiceTable } from '@presentation/components/services/ServiceTable'
+import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
+import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
+import { PageHeader } from '@presentation/components/shared/PageHeader'
+
+type StatusFilter = 'all' | 'active' | 'inactive'
+type Feedback = {
+  type: 'success' | 'error'
+  message: string
+}
+
+export function ServicesPage() {
+  const [services, setServices] = useState<Service[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all')
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const [isPanelOpen, setIsPanelOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [processingServiceId, setProcessingServiceId] = useState<string | null>(null)
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
+
+  useEffect(() => {
+    void loadServices()
+  }, [])
+
+  const filteredServices = useMemo(() => {
+    return services.filter((service) => {
+      const normalizedSearch = search.toLowerCase()
+      const matchesSearch =
+        service.name.toLowerCase().includes(normalizedSearch) ||
+        service.description.toLowerCase().includes(normalizedSearch)
+
+      const matchesStatus =
+        statusFilter === 'all' ||
+        (statusFilter === 'active' && service.isActive) ||
+        (statusFilter === 'inactive' && !service.isActive)
+
+      return matchesSearch && matchesStatus
+    })
+  }, [search, services, statusFilter])
+
+  async function loadServices() {
+    setIsLoading(true)
+
+    try {
+      const data = await serviceRepository.getAll()
+      setServices(data)
+    } catch {
+      setFeedback({
+        type: 'error',
+        message: 'Nao foi possivel carregar os servicos.',
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  function openCreatePanel() {
+    setSelectedService(null)
+    setIsPanelOpen(true)
+  }
+
+  function openEditPanel(service: Service) {
+    setSelectedService(service)
+    setIsPanelOpen(true)
+  }
+
+  function closePanel() {
+    if (isSubmitting) {
+      return
+    }
+
+    setIsPanelOpen(false)
+    setSelectedService(null)
+  }
+
+  async function handleSubmit(values: ServiceFormValues) {
+    setIsSubmitting(true)
+    setFeedback(null)
+
+    const payload = {
+      ...values,
+      description: values.description ?? '',
+    }
+
+    try {
+      if (selectedService) {
+        await serviceRepository.update(selectedService.id, payload)
+        setFeedback({
+          type: 'success',
+          message: 'Servico atualizado com sucesso.',
+        })
+      } else {
+        await serviceRepository.create(payload)
+        setFeedback({
+          type: 'success',
+          message: 'Servico cadastrado com sucesso.',
+        })
+      }
+
+      await loadServices()
+      setIsPanelOpen(false)
+      setSelectedService(null)
+    } catch {
+      setFeedback({
+        type: 'error',
+        message: 'Nao foi possivel salvar o servico.',
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  async function handleToggleActive(service: Service) {
+    setFeedback(null)
+    setProcessingServiceId(service.id)
+
+    try {
+      await serviceRepository.toggleActive(service.id)
+      await loadServices()
+      setFeedback({
+        type: 'success',
+        message: service.isActive
+          ? 'Servico inativado com sucesso.'
+          : 'Servico reativado com sucesso.',
+      })
+    } catch {
+      setFeedback({
+        type: 'error',
+        message: 'Nao foi possivel alterar o status do servico.',
+      })
+    } finally {
+      setProcessingServiceId(null)
+    }
+  }
+
+  return (
+    <section className="space-y-6">
+      <PageHeader
+        eyebrow="Servicos"
+        title="Catalogo de servicos"
+        description="Gerencie os servicos da assistencia com uma operacao simples de cadastro, edicao, status e consulta rapida."
+      />
+
+      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:w-full xl:max-w-3xl">
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">Buscar</span>
+              <input
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Digite o nome ou a descricao"
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              />
+            </label>
+
+            <label className="grid gap-2">
+              <span className="text-sm font-medium text-slate-700">Status</span>
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
+                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              >
+                <option value="all">Todos</option>
+                <option value="active">Ativos</option>
+                <option value="inactive">Inativos</option>
+              </select>
+            </label>
+          </div>
+
+          <button
+            type="button"
+            onClick={openCreatePanel}
+            className="w-full rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 sm:w-auto"
+          >
+            Novo servico
+          </button>
+        </div>
+
+        {feedback ? <div className="mt-4"><FeedbackBanner {...feedback} /></div> : null}
+        {isLoading ? <div className="mt-4"><LoadingNotice message="Carregando lista de servicos..." /></div> : null}
+      </div>
+
+      <ServiceTable
+        services={filteredServices}
+        isLoading={isLoading}
+        processingId={processingServiceId}
+        onEdit={openEditPanel}
+        onToggleActive={handleToggleActive}
+      />
+
+      <ServiceFormPanel
+        isOpen={isPanelOpen}
+        service={selectedService}
+        isSubmitting={isSubmitting}
+        onClose={closePanel}
+        onSubmit={handleSubmit}
+      />
+    </section>
+  )
+}
