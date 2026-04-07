@@ -23,7 +23,7 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
       <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900">Nenhuma venda encontrada</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          Ajuste os filtros ou realize uma nova venda para popular o historico.
+          Ajuste os filtros ou realize uma nova venda para popular o histórico.
         </p>
       </div>
     )
@@ -43,7 +43,7 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
               <th className="px-6 py-4">Desconto</th>
               <th className="px-6 py-4">Total</th>
               <th className="px-6 py-4">Lucro</th>
-              <th className="px-6 py-4 text-right">Acoes</th>
+              <th className="px-6 py-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">

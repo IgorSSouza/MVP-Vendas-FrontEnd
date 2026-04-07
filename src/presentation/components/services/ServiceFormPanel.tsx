@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import type { Service } from '@domain/entities'
+import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
 import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { serviceFormSchema, type ServiceFormValues } from '@presentation/components/services/service-form-schema'
@@ -85,7 +86,7 @@ export function ServiceFormPanel({
   }
 
   return (
-    <>
+    <AppPortal>
       <div
         className={[
           'app-overlay',
@@ -104,13 +105,13 @@ export function ServiceFormPanel({
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
               <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80">
-                Servicos
+                Serviços
               </p>
               <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
-                {service ? 'Editar servico' : 'Novo servico'}
+                {service ? 'Editar serviço' : 'Novo serviço'}
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Preencha os dados principais para manter os servicos organizados.
+                Preencha os dados principais para manter os serviços organizados.
               </p>
             </div>
 
@@ -140,12 +141,12 @@ export function ServiceFormPanel({
             </label>
 
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Descricao</span>
+              <span className="text-sm font-medium text-slate-700">Descrição</span>
               <textarea
                 {...register('description')}
                 rows={4}
                 className="app-textarea"
-                placeholder="Detalhes breves sobre o servico"
+                placeholder="Detalhes breves sobre o serviço"
               />
             </label>
 
@@ -170,7 +171,7 @@ export function ServiceFormPanel({
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700">Preco de venda</span>
+                <span className="text-sm font-medium text-slate-700">Preço de venda</span>
                 <Controller
                   control={control}
                   name="salePrice"
@@ -195,7 +196,7 @@ export function ServiceFormPanel({
                 type="checkbox"
                 className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-200"
               />
-              <span className="text-sm font-medium text-slate-700">Servico ativo</span>
+              <span className="text-sm font-medium text-slate-700">Serviço ativo</span>
             </label>
           </div>
 
@@ -219,8 +220,8 @@ export function ServiceFormPanel({
                     {isSubmitting
                       ? 'Salvando...'
                       : service
-                        ? 'Salvar alteracoes'
-                        : 'Cadastrar servico'}
+                        ? 'Salvar alterações'
+                        : 'Cadastrar serviço'}
                   </span>
                 </span>
               </button>
@@ -228,6 +229,6 @@ export function ServiceFormPanel({
           </div>
         </form>
       </aside>
-    </>
+    </AppPortal>
   )
 }

@@ -59,7 +59,7 @@ export function ServicesPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel carregar os servicos.'),
+        message: getApiErrorMessage(error, 'Não foi possível carregar os serviços.'),
       })
     } finally {
       if (showLoading) {
@@ -101,13 +101,13 @@ export function ServicesPage() {
         await servicesApi.update(selectedService.id, payload)
         setFeedback({
           type: 'success',
-          message: 'Servico atualizado com sucesso.',
+          message: 'Serviço atualizado com sucesso.',
         })
       } else {
         await servicesApi.create(payload)
         setFeedback({
           type: 'success',
-          message: 'Servico cadastrado com sucesso.',
+          message: 'Serviço cadastrado com sucesso.',
         })
       }
 
@@ -117,7 +117,7 @@ export function ServicesPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel salvar o servico.'),
+        message: getApiErrorMessage(error, 'Não foi possível salvar o serviço.'),
       })
     } finally {
       setIsSubmitting(false)
@@ -134,15 +134,15 @@ export function ServicesPage() {
       setFeedback({
         type: 'success',
         message: service.isActive
-          ? 'Servico inativado com sucesso.'
-          : 'Servico reativado com sucesso.',
+          ? 'Serviço inativado com sucesso.'
+          : 'Serviço reativado com sucesso.',
       })
     } catch (error) {
       setFeedback({
         type: 'error',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel alterar o status do servico.',
+          'Não foi possível alterar o status do serviço.',
         ),
       })
     } finally {
@@ -154,9 +154,9 @@ export function ServicesPage() {
     <section className="space-y-6">
       <div className="app-enter-soft">
         <PageHeader
-          eyebrow="Servicos"
-          title="Catalogo de servicos"
-          description="Gerencie os servicos da assistencia com uma operacao simples de cadastro, edicao, status e consulta rapida."
+          eyebrow="Serviços"
+          title="Catálogo de serviços"
+          description="Gerencie os serviços da assistência com uma operação simples de cadastro, edição, status e consulta rápida."
         />
       </div>
 
@@ -168,7 +168,7 @@ export function ServicesPage() {
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Digite o nome ou a descricao"
+                placeholder="Digite o nome ou a descrição"
                 className="app-input"
               />
             </label>
@@ -192,13 +192,13 @@ export function ServicesPage() {
             onClick={openCreatePanel}
             className="app-button-primary w-full px-5 sm:w-auto"
           >
-            Novo servico
+            Novo serviço
           </button>
         </div>
 
         <div className="mt-4 app-feedback-stack">
           {feedback ? <FeedbackBanner {...feedback} /> : null}
-          {isLoading ? <LoadingNotice message="Carregando lista de servicos..." /> : null}
+          {isLoading ? <LoadingNotice message="Carregando lista de serviços..." /> : null}
         </div>
       </div>
 

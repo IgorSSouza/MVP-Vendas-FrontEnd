@@ -58,7 +58,7 @@ export function ProductsPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel carregar os produtos.'),
+        message: getApiErrorMessage(error, 'Não foi possível carregar os produtos.'),
       })
     } finally {
       if (showLoading) {
@@ -111,7 +111,7 @@ export function ProductsPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel salvar o produto.'),
+        message: getApiErrorMessage(error, 'Não foi possível salvar o produto.'),
       })
     } finally {
       setIsSubmitting(false)
@@ -136,7 +136,7 @@ export function ProductsPage() {
         type: 'error',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel alterar o status do produto.',
+          'Não foi possível alterar o status do produto.',
         ),
       })
     } finally {
@@ -149,8 +149,8 @@ export function ProductsPage() {
       <div className="app-enter-soft">
         <PageHeader
           eyebrow="Produtos"
-          title="Catalogo de produtos"
-          description="Gerencie os produtos da loja com uma operacao simples de cadastro, edicao, status e consulta rapida."
+          title="Catálogo de produtos"
+          description="Gerencie os produtos da loja com uma operação simples de cadastro, edição, status e consulta rápida."
         />
       </div>
 

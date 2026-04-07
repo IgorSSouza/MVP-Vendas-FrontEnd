@@ -1,6 +1,7 @@
 import type { Sale } from '@domain/entities'
 
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
+import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import {
@@ -25,7 +26,7 @@ export function SaleDetailsPanel({
   onClose,
 }: SaleDetailsPanelProps) {
   return (
-    <>
+    <AppPortal>
       <div
         className={[
           'app-overlay',
@@ -189,6 +190,6 @@ export function SaleDetailsPanel({
           </div>
         )}
       </aside>
-    </>
+    </AppPortal>
   )
 }

@@ -50,7 +50,7 @@ export function SaleCatalogSection({
                   <div>
                     <h3 className="font-semibold text-slate-900">{item.name}</h3>
                     <p className="mt-1 text-sm text-slate-500">
-                      {isProduct ? item.category : item.description || 'Sem descricao cadastrada.'}
+                      {isProduct ? item.category : item.description || 'Sem descrição cadastrada.'}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
                       <span className="app-badge border-slate-200 bg-slate-100 text-slate-600">

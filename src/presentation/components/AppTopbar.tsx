@@ -49,6 +49,7 @@ export function AppTopbar() {
           <NavLink
             key={item.to}
             to={item.to}
+            end={item.to === appRoutes.sales || item.to === appRoutes.newSale}
             className={({ isActive }) =>
               [
                 'rounded-full border px-3 py-2 text-sm font-medium transition shadow-sm',

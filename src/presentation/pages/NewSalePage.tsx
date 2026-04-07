@@ -85,7 +85,7 @@ export function NewSalePage() {
         type: 'error',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel carregar os dados para a venda.',
+          'Não foi possível carregar os dados para a venda.',
         ),
       })
     } finally {
@@ -121,7 +121,7 @@ export function NewSalePage() {
     if (product.stockQuantity <= 0) {
       setFeedback({
         type: 'error',
-        message: 'Este produto esta sem estoque disponivel.',
+        message: 'Este produto está sem estoque disponível.',
       })
       return
     }
@@ -133,7 +133,7 @@ export function NewSalePage() {
         if (existingItem.quantity >= product.stockQuantity) {
           setFeedback({
             type: 'error',
-            message: 'Quantidade solicitada maior que o estoque disponivel.',
+            message: 'Quantidade solicitada maior que o estoque disponível.',
           })
           return currentItems
         }
@@ -201,7 +201,7 @@ export function NewSalePage() {
     if (!Number.isFinite(quantity) || quantity < 1) {
       setFeedback({
         type: 'error',
-        message: 'A quantidade minima para cada item e 1.',
+        message: 'A quantidade mínima para cada item é 1.',
       })
       return
     }
@@ -218,7 +218,7 @@ export function NewSalePage() {
           if (quantity > availableStock) {
             setFeedback({
               type: 'error',
-              message: 'Quantidade solicitada maior que o estoque disponivel.',
+              message: 'Quantidade solicitada maior que o estoque disponível.',
             })
             return item
           }
@@ -257,7 +257,7 @@ export function NewSalePage() {
     if (summary.discount > summary.subtotal) {
       setFeedback({
         type: 'error',
-        message: 'O desconto nao pode ser maior que o subtotal da venda.',
+        message: 'O desconto não pode ser maior que o subtotal da venda.',
       })
       return
     }
@@ -287,7 +287,7 @@ export function NewSalePage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel finalizar a venda.'),
+        message: getApiErrorMessage(error, 'Não foi possível finalizar a venda.'),
       })
     } finally {
       setIsSubmitting(false)
@@ -300,14 +300,14 @@ export function NewSalePage() {
         <PageHeader
           eyebrow="Nova venda"
           title="Montar venda"
-          description="Adicione produtos e servicos, ajuste os itens da venda e finalize a operacao com calculo imediato de subtotal, total e lucro."
+          description="Adicione produtos e serviços, ajuste os itens da venda e finalize a operação com cálculo imediato de subtotal, total e lucro."
         />
       </div>
 
       <div className="app-feedback-stack app-enter-soft-delay-1">
         {feedback ? <FeedbackBanner {...feedback} /> : null}
         {isLoading ? (
-          <LoadingNotice message="Carregando produtos e servicos para a venda..." />
+          <LoadingNotice message="Carregando produtos e serviços para a venda..." />
         ) : null}
       </div>
 
@@ -316,27 +316,27 @@ export function NewSalePage() {
           <div className="grid gap-6 lg:grid-cols-2">
             <SaleCatalogSection
               title="Produtos ativos"
-              description="Escolha produtos disponiveis em estoque para adicionar na venda."
+              description="Escolha produtos disponíveis em estoque para adicionar na venda."
               items={activeProducts.map((product) => ({
                 ...product,
                 type: SaleItemType.PRODUCT,
               }))}
               emptyMessage={
-                isLoading ? 'Carregando produtos...' : 'Nenhum produto ativo disponivel.'
+                isLoading ? 'Carregando produtos...' : 'Nenhum produto ativo disponível.'
               }
               isDisabled={isLoading || isSubmitting}
               onAdd={(item) => addProduct(item as Product)}
             />
 
             <SaleCatalogSection
-              title="Servicos ativos"
-              description="Adicione servicos ativos da assistencia tecnica ao pedido."
+              title="Serviços ativos"
+              description="Adicione serviços ativos da assistência técnica ao pedido."
               items={activeServices.map((service) => ({
                 ...service,
                 type: SaleItemType.SERVICE,
               }))}
               emptyMessage={
-                isLoading ? 'Carregando servicos...' : 'Nenhum servico ativo disponivel.'
+                isLoading ? 'Carregando serviços...' : 'Nenhum serviço ativo disponível.'
               }
               isDisabled={isLoading || isSubmitting}
               onAdd={(item) => addService(item as Service)}

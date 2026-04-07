@@ -23,23 +23,23 @@ export function ModulePlaceholder({
 
       <div className="grid gap-4 lg:grid-cols-3">
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Objetivo desta area</h2>
+          <h2 className="text-sm font-semibold text-slate-900">Objetivo desta área</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Validar a rota, o layout e a organizacao da interface antes da implementacao real.
+            Validar a rota, o layout e a organização da interface antes da implementação real.
           </p>
         </article>
 
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="text-sm font-semibold text-slate-900">Status atual</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Placeholder funcional, sem regras de negocio, API ou formularios completos.
+            Placeholder funcional, sem regras de negócio, API ou formulários completos.
           </p>
         </article>
 
         <article className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-          <h2 className="text-sm font-semibold text-slate-900">Proxima evolucao</h2>
+          <h2 className="text-sm font-semibold text-slate-900">Próxima evolução</h2>
           <p className="mt-2 text-sm leading-6 text-slate-600">
-            Receber componentes e fluxos reais do MVP conforme os modulos forem priorizados.
+            Receber componentes e fluxos reais do MVP conforme os módulos forem priorizados.
           </p>
         </article>
       </div>

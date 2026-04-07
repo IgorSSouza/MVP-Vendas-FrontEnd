@@ -14,7 +14,7 @@ export const mockServices: Service[] = [
   {
     id: 'service_battery_replace',
     name: 'Troca de bateria',
-    description: 'Servico de substituicao com testes basicos do aparelho.',
+    description: 'Serviço de substituição com testes básicos do aparelho.',
     costPrice: 45,
     salePrice: 120,
     isActive: true,

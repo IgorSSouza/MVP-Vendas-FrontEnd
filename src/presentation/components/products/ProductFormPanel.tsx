@@ -5,6 +5,7 @@ import type { Product } from '@domain/entities'
 
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
 import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
+import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { productFormSchema, type ProductFormValues } from '@presentation/components/products/product-form-schema'
 
 type ProductFormPanelProps = {
@@ -85,7 +86,7 @@ export function ProductFormPanel({
   }
 
   return (
-    <>
+    <AppPortal>
       <div
         className={[
           'app-overlay',
@@ -110,7 +111,7 @@ export function ProductFormPanel({
                 {product ? 'Editar produto' : 'Novo produto'}
               </h2>
               <p className="mt-2 text-sm leading-6 text-slate-600">
-                Preencha os dados principais para manter o catalogo organizado.
+                Preencha os dados principais para manter o catálogo organizado.
               </p>
             </div>
 
@@ -172,7 +173,7 @@ export function ProductFormPanel({
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700">Preco de venda</span>
+                <span className="text-sm font-medium text-slate-700">Preço de venda</span>
                 <Controller
                   control={control}
                   name="salePrice"
@@ -235,7 +236,7 @@ export function ProductFormPanel({
                     {isSubmitting
                       ? 'Salvando...'
                       : product
-                        ? 'Salvar alteracoes'
+                        ? 'Salvar alterações'
                         : 'Cadastrar produto'}
                   </span>
                 </span>
@@ -244,6 +245,6 @@ export function ProductFormPanel({
           </div>
         </form>
       </aside>
-    </>
+    </AppPortal>
   )
 }

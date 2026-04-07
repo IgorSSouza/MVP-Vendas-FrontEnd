@@ -32,7 +32,7 @@ export function SaleSummaryCard({
     <aside className="app-surface p-6">
       <h2 className="text-lg font-semibold text-slate-950">Resumo da venda</h2>
       <p className="mt-2 text-sm leading-6 text-slate-600">
-        Revise os valores e finalize a operacao.
+        Revise os valores e finalize a operação.
       </p>
 
       <div className="mt-6 grid gap-5">

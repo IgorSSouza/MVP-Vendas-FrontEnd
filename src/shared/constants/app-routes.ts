@@ -10,17 +10,17 @@ export const navigationItems = [
   {
     label: 'Dashboard',
     to: appRoutes.dashboard,
-    description: 'Visao geral do fluxo comercial',
+    description: 'Visão geral do fluxo comercial',
   },
   {
     label: 'Produtos',
     to: appRoutes.products,
-    description: 'Catalogo e cadastro futuro de itens',
+    description: 'Catálogo e cadastro de itens',
   },
   {
-    label: 'Servicos',
+    label: 'Serviços',
     to: appRoutes.services,
-    description: 'Base para servicos da assistencia tecnica',
+    description: 'Base para serviços da assistência técnica',
   },
   {
     label: 'Vendas',
@@ -30,6 +30,6 @@ export const navigationItems = [
   {
     label: 'Nova venda',
     to: appRoutes.newSale,
-    description: 'Entrada futura do fluxo de venda',
+    description: 'Fluxo principal para registrar vendas',
   },
 ] as const

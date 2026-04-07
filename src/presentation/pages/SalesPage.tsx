@@ -55,7 +55,7 @@ export function SalesPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Nao foi possivel carregar o historico de vendas.'),
+        message: getApiErrorMessage(error, 'Não foi possível carregar o histórico de vendas.'),
       })
     } finally {
       setIsLoading(false)
@@ -73,7 +73,7 @@ export function SalesPage() {
       setSelectedSale(saleDetails)
     } catch (error) {
       setDetailsError(
-        getApiErrorMessage(error, 'Nao foi possivel carregar os detalhes da venda.'),
+        getApiErrorMessage(error, 'Não foi possível carregar os detalhes da venda.'),
       )
     } finally {
       setIsDetailsLoading(false)
@@ -92,8 +92,8 @@ export function SalesPage() {
       <div className="app-enter-soft">
         <PageHeader
           eyebrow="Vendas"
-          title="Historico de vendas"
-          description="Consulte as vendas realizadas, aplique filtros rapidos e visualize os detalhes de cada operacao."
+          title="Histórico de vendas"
+          description="Consulte as vendas realizadas, aplique filtros rápidos e visualize os detalhes de cada operação."
         />
       </div>
 
@@ -123,8 +123,8 @@ export function SalesPage() {
               <option value="all">Todos</option>
               <option value={PaymentMethod.PIX}>Pix</option>
               <option value={PaymentMethod.CASH}>Dinheiro</option>
-              <option value={PaymentMethod.DEBIT_CARD}>Cartao de debito</option>
-              <option value={PaymentMethod.CREDIT_CARD}>Cartao de credito</option>
+              <option value={PaymentMethod.DEBIT_CARD}>Cartão de débito</option>
+              <option value={PaymentMethod.CREDIT_CARD}>Cartão de crédito</option>
             </select>
           </label>
 
@@ -151,7 +151,7 @@ export function SalesPage() {
 
         {isLoading ? (
           <div className="mt-4">
-            <LoadingNotice message="Carregando historico de vendas..." />
+            <LoadingNotice message="Carregando histórico de vendas..." />
           </div>
         ) : null}
       </div>

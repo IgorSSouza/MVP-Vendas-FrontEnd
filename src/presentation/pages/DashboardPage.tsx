@@ -42,7 +42,7 @@ export function DashboardPage() {
         type: 'error',
         message: getApiErrorMessage(
           error,
-          'Nao foi possivel carregar os indicadores do dashboard.',
+          'Não foi possível carregar os indicadores do dashboard.',
         ),
       })
     } finally {
@@ -59,8 +59,8 @@ export function DashboardPage() {
       <div className="app-enter-soft">
         <PageHeader
           eyebrow="Dashboard"
-          title="Visao geral da operacao"
-          description="Acompanhe os principais numeros de vendas, lucro, estoque baixo e pagamentos em um painel simples e direto para o dia a dia da loja."
+          title="Visão geral da operação"
+          description="Acompanhe os principais números de vendas, lucro, estoque baixo e pagamentos em um painel simples e direto para o dia a dia da loja."
         />
       </div>
 
@@ -76,9 +76,9 @@ export function DashboardPage() {
           helper="Quantidade de vendas registradas hoje."
         />
         <KpiCard
-          label="Vendas do mes"
+          label="Vendas do mês"
           value={String(dashboardData.monthSalesCount)}
-          helper="Quantidade de vendas no mes atual."
+          helper="Quantidade de vendas no mês atual."
         />
         <KpiCard
           label="Total bruto"

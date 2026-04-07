@@ -85,7 +85,7 @@ export async function httpRequest<T>(path: string, init?: RequestInit) {
     })
   } catch {
     throw new ApiError(
-      'Nao foi possivel conectar com a API. Verifique se o backend esta em execucao e se a configuracao da URL esta correta.',
+      'Não foi possível conectar com a API. Verifique se o backend está em execução e se a configuração da URL está correta.',
       0,
     )
   }
@@ -103,7 +103,7 @@ export async function httpRequest<T>(path: string, init?: RequestInit) {
 
   if (!response.ok) {
     throw new ApiError(
-      extractErrorMessage(payload) ?? 'Nao foi possivel concluir a requisicao.',
+      extractErrorMessage(payload) ?? 'Não foi possível concluir a requisição.',
       response.status,
     )
   }

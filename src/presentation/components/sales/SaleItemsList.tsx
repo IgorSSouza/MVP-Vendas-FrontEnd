@@ -22,7 +22,7 @@ export function SaleItemsList({
       <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900">Nenhum item na venda</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">
-          Adicione produtos ou servicos para montar a venda.
+          Adicione produtos ou serviços para montar a venda.
         </p>
       </div>
     )
@@ -50,11 +50,11 @@ export function SaleItemsList({
                   </span>
                 </div>
                 <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-500">
-                  <span>Unitario: {formatCurrency(item.unitSalePrice)}</span>
+                  <span>Unitário: {formatCurrency(item.unitSalePrice)}</span>
                   <span>Subtotal: {formatCurrency(item.subtotal)}</span>
                   <span>Lucro: {formatCurrency(item.profit)}</span>
                   {typeof item.availableStock === 'number' ? (
-                    <span>Estoque disponivel: {item.availableStock}</span>
+                    <span>Estoque disponível: {item.availableStock}</span>
                   ) : null}
                 </div>
               </div>
