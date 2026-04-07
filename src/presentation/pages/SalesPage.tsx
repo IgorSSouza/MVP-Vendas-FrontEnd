@@ -89,17 +89,19 @@ export function SalesPage() {
 
   return (
     <section className="space-y-6">
-      <PageHeader
-        eyebrow="Vendas"
-        title="Historico de vendas"
-        description="Consulte as vendas realizadas, aplique filtros rapidos e visualize os detalhes de cada operacao."
-      />
+      <div className="app-enter-soft">
+        <PageHeader
+          eyebrow="Vendas"
+          title="Historico de vendas"
+          description="Consulte as vendas realizadas, aplique filtros rapidos e visualize os detalhes de cada operacao."
+        />
+      </div>
 
-      <div className="app-feedback-stack">
+      <div className="app-feedback-stack app-enter-soft-delay-1">
         {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
       </div>
 
-      <div className="app-surface p-6">
+      <div className="app-surface p-6 app-enter-soft-delay-1">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700">Buscar</span>
@@ -154,7 +156,9 @@ export function SalesPage() {
         ) : null}
       </div>
 
-      <SalesTable sales={filteredSales} isLoading={isLoading} onOpenDetails={openDetails} />
+      <div className="app-enter-soft-delay-2">
+        <SalesTable sales={filteredSales} isLoading={isLoading} onOpenDetails={openDetails} />
+      </div>
 
       <SaleDetailsPanel
         sale={selectedSale}

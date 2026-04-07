@@ -56,18 +56,20 @@ export function DashboardPage() {
 
   return (
     <section className="space-y-6">
-      <PageHeader
-        eyebrow="Dashboard"
-        title="Visao geral da operacao"
-        description="Acompanhe os principais numeros de vendas, lucro, estoque baixo e pagamentos em um painel simples e direto para o dia a dia da loja."
-      />
+      <div className="app-enter-soft">
+        <PageHeader
+          eyebrow="Dashboard"
+          title="Visao geral da operacao"
+          description="Acompanhe os principais numeros de vendas, lucro, estoque baixo e pagamentos em um painel simples e direto para o dia a dia da loja."
+        />
+      </div>
 
-      <div className="app-feedback-stack">
+      <div className="app-feedback-stack app-enter-soft-delay-1">
         {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
         {isLoading ? <LoadingNotice message="Carregando indicadores do dashboard..." /> : null}
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5 app-enter-soft-delay-1">
         <KpiCard
           label="Vendas do dia"
           value={String(dashboardData.todaySalesCount)}
@@ -95,12 +97,14 @@ export function DashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_1fr]">
+      <div className="grid gap-6 xl:grid-cols-[1fr_1fr] app-enter-soft-delay-2">
         <PaymentSummaryCard items={dashboardData.salesByPaymentMethod} />
         <LowStockCard products={dashboardData.lowStockProducts} />
       </div>
 
-      <RecentSalesCard sales={dashboardData.recentSales} />
+      <div className="app-enter-soft-delay-3">
+        <RecentSalesCard sales={dashboardData.recentSales} />
+      </div>
     </section>
   )
 }

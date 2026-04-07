@@ -146,13 +146,15 @@ export function ProductsPage() {
 
   return (
     <section className="space-y-6">
-      <PageHeader
-        eyebrow="Produtos"
-        title="Catalogo de produtos"
-        description="Gerencie os produtos da loja com uma operacao simples de cadastro, edicao, status e consulta rapida."
-      />
+      <div className="app-enter-soft">
+        <PageHeader
+          eyebrow="Produtos"
+          title="Catalogo de produtos"
+          description="Gerencie os produtos da loja com uma operacao simples de cadastro, edicao, status e consulta rapida."
+        />
+      </div>
 
-      <div className="app-surface p-6">
+      <div className="app-surface p-6 app-enter-soft-delay-1">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:w-full xl:max-w-3xl">
             <label className="grid gap-2">
@@ -194,13 +196,15 @@ export function ProductsPage() {
         </div>
       </div>
 
-      <ProductTable
-        products={filteredProducts}
-        isLoading={isLoading}
-        processingId={processingProductId}
-        onEdit={openEditPanel}
-        onToggleActive={handleToggleActive}
-      />
+      <div className="app-enter-soft-delay-2">
+        <ProductTable
+          products={filteredProducts}
+          isLoading={isLoading}
+          processingId={processingProductId}
+          onEdit={openEditPanel}
+          onToggleActive={handleToggleActive}
+        />
+      </div>
 
       <ProductFormPanel
         isOpen={isPanelOpen}

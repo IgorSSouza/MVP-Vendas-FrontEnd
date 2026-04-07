@@ -1,10 +1,12 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet, useLocation } from 'react-router-dom'
 
 import { getCurrentYear } from '@shared/utils/get-current-year'
 import { AppSidebar } from '@presentation/components/AppSidebar'
 import { AppTopbar } from '@presentation/components/AppTopbar'
 
 export function AppLayout() {
+  const location = useLocation()
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">
       <div className="mx-auto flex min-h-screen w-full max-w-screen-2xl">
@@ -14,7 +16,9 @@ export function AppLayout() {
           <AppTopbar />
 
           <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">
-            <Outlet />
+            <div key={location.pathname} className="app-route-transition">
+              <Outlet />
+            </div>
           </main>
 
           <footer className="border-t border-slate-200/80 bg-white/95 px-4 py-4 text-sm text-slate-500 sm:px-6 lg:px-8">

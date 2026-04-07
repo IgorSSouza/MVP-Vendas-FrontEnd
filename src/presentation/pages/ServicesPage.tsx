@@ -152,13 +152,15 @@ export function ServicesPage() {
 
   return (
     <section className="space-y-6">
-      <PageHeader
-        eyebrow="Servicos"
-        title="Catalogo de servicos"
-        description="Gerencie os servicos da assistencia com uma operacao simples de cadastro, edicao, status e consulta rapida."
-      />
+      <div className="app-enter-soft">
+        <PageHeader
+          eyebrow="Servicos"
+          title="Catalogo de servicos"
+          description="Gerencie os servicos da assistencia com uma operacao simples de cadastro, edicao, status e consulta rapida."
+        />
+      </div>
 
-      <div className="app-surface p-6">
+      <div className="app-surface p-6 app-enter-soft-delay-1">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:w-full xl:max-w-3xl">
             <label className="grid gap-2">
@@ -200,13 +202,15 @@ export function ServicesPage() {
         </div>
       </div>
 
-      <ServiceTable
-        services={filteredServices}
-        isLoading={isLoading}
-        processingId={processingServiceId}
-        onEdit={openEditPanel}
-        onToggleActive={handleToggleActive}
-      />
+      <div className="app-enter-soft-delay-2">
+        <ServiceTable
+          services={filteredServices}
+          isLoading={isLoading}
+          processingId={processingServiceId}
+          onEdit={openEditPanel}
+          onToggleActive={handleToggleActive}
+        />
+      </div>
 
       <ServiceFormPanel
         isOpen={isPanelOpen}

@@ -296,13 +296,15 @@ export function NewSalePage() {
 
   return (
     <section className="space-y-6">
-      <PageHeader
-        eyebrow="Nova venda"
-        title="Montar venda"
-        description="Adicione produtos e servicos, ajuste os itens da venda e finalize a operacao com calculo imediato de subtotal, total e lucro."
-      />
+      <div className="app-enter-soft">
+        <PageHeader
+          eyebrow="Nova venda"
+          title="Montar venda"
+          description="Adicione produtos e servicos, ajuste os itens da venda e finalize a operacao com calculo imediato de subtotal, total e lucro."
+        />
+      </div>
 
-      <div className="app-feedback-stack">
+      <div className="app-feedback-stack app-enter-soft-delay-1">
         {feedback ? <FeedbackBanner {...feedback} /> : null}
         {isLoading ? (
           <LoadingNotice message="Carregando produtos e servicos para a venda..." />
@@ -310,7 +312,7 @@ export function NewSalePage() {
       </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
-        <div className="space-y-6">
+        <div className="space-y-6 app-enter-soft-delay-2">
           <div className="grid gap-6 lg:grid-cols-2">
             <SaleCatalogSection
               title="Produtos ativos"
@@ -348,21 +350,23 @@ export function NewSalePage() {
           />
         </div>
 
-        <SaleSummaryCard
-          discount={discount}
-          subtotal={summary.subtotal}
-          total={summary.total}
-          profit={summary.profit}
-          paymentMethod={paymentMethod}
-          isSubmitting={isSubmitting}
-          canSubmit={items.length > 0}
-          onDiscountChange={(value) => {
-            setFeedback(null)
-            setDiscount(Math.max(value, 0))
-          }}
-          onPaymentMethodChange={setPaymentMethod}
-          onSubmit={handleSubmit}
-        />
+        <div className="app-enter-soft-delay-3">
+          <SaleSummaryCard
+            discount={discount}
+            subtotal={summary.subtotal}
+            total={summary.total}
+            profit={summary.profit}
+            paymentMethod={paymentMethod}
+            isSubmitting={isSubmitting}
+            canSubmit={items.length > 0}
+            onDiscountChange={(value) => {
+              setFeedback(null)
+              setDiscount(Math.max(value, 0))
+            }}
+            onPaymentMethodChange={setPaymentMethod}
+            onSubmit={handleSubmit}
+          />
+        </div>
       </div>
     </section>
   )

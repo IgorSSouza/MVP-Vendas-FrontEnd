@@ -92,6 +92,26 @@
     @apply space-y-3;
   }
 
+  .app-route-transition {
+    animation: app-fade-up 220ms ease-out both;
+  }
+
+  .app-enter-soft {
+    animation: app-fade-up 240ms ease-out both;
+  }
+
+  .app-enter-soft-delay-1 {
+    animation: app-fade-up 280ms ease-out both;
+  }
+
+  .app-enter-soft-delay-2 {
+    animation: app-fade-up 320ms ease-out both;
+  }
+
+  .app-enter-soft-delay-3 {
+    animation: app-fade-up 360ms ease-out both;
+  }
+
   .app-table-shell {
     @apply overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5;
   }
@@ -114,5 +134,27 @@
 
   .app-table tbody tr {
     @apply text-sm text-slate-600 transition hover:bg-slate-50/70;
+  }
+}
+
+@keyframes app-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-route-transition,
+  .app-enter-soft,
+  .app-enter-soft-delay-1,
+  .app-enter-soft-delay-2,
+  .app-enter-soft-delay-3 {
+    animation: none;
   }
 }
