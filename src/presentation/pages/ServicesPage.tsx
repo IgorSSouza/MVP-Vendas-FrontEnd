@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import type { Service } from '@domain/entities'
-import { serviceRepository } from '@infra/mock/repositories'
 import { ServiceFormPanel } from '@presentation/components/services/ServiceFormPanel'
 import type { ServiceFormValues } from '@presentation/components/services/service-form-schema'
 import { ServiceTable } from '@presentation/components/services/ServiceTable'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
+import { ApiError } from '@shared/api/http-client'
+import { servicesApi } from '@shared/api/services-api'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 type Feedback = {
@@ -50,12 +51,15 @@ export function ServicesPage() {
     setIsLoading(true)
 
     try {
-      const data = await serviceRepository.getAll()
+      const data = await servicesApi.getAll()
       setServices(data)
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel carregar os servicos.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel carregar os servicos.',
       })
     } finally {
       setIsLoading(false)
@@ -92,13 +96,13 @@ export function ServicesPage() {
 
     try {
       if (selectedService) {
-        await serviceRepository.update(selectedService.id, payload)
+        await servicesApi.update(selectedService.id, payload)
         setFeedback({
           type: 'success',
           message: 'Servico atualizado com sucesso.',
         })
       } else {
-        await serviceRepository.create(payload)
+        await servicesApi.create(payload)
         setFeedback({
           type: 'success',
           message: 'Servico cadastrado com sucesso.',
@@ -108,10 +112,13 @@ export function ServicesPage() {
       await loadServices()
       setIsPanelOpen(false)
       setSelectedService(null)
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel salvar o servico.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel salvar o servico.',
       })
     } finally {
       setIsSubmitting(false)
@@ -123,7 +130,7 @@ export function ServicesPage() {
     setProcessingServiceId(service.id)
 
     try {
-      await serviceRepository.toggleActive(service.id)
+      await servicesApi.toggleStatus(service.id)
       await loadServices()
       setFeedback({
         type: 'success',
@@ -131,10 +138,13 @@ export function ServicesPage() {
           ? 'Servico inativado com sucesso.'
           : 'Servico reativado com sucesso.',
       })
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel alterar o status do servico.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel alterar o status do servico.',
       })
     } finally {
       setProcessingServiceId(null)
