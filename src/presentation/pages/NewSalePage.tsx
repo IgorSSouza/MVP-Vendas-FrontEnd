@@ -9,13 +9,16 @@ import {
 } from '@application/calculators'
 import type { Product, SaleItem, Service } from '@domain/entities'
 import { PaymentMethod, SaleItemType } from '@domain/enums'
-import { productRepository, saleRepository, serviceRepository } from '@infra/mock/repositories'
 import { SaleCatalogSection } from '@presentation/components/sales/SaleCatalogSection'
 import { SaleItemsList } from '@presentation/components/sales/SaleItemsList'
 import { SaleSummaryCard } from '@presentation/components/sales/SaleSummaryCard'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
+import { ApiError } from '@shared/api/http-client'
+import { productsApi } from '@shared/api/products-api'
+import { salesApi } from '@shared/api/sales-api'
+import { servicesApi } from '@shared/api/services-api'
 
 type DraftSaleItem = Omit<SaleItem, 'id'> & {
   availableStock?: number
@@ -68,16 +71,19 @@ export function NewSalePage() {
 
     try {
       const [productData, serviceData] = await Promise.all([
-        productRepository.getAll(),
-        serviceRepository.getAll(),
+        productsApi.getAll(),
+        servicesApi.getAll(),
       ])
 
       setProducts(productData)
       setServices(serviceData)
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel carregar os dados para a venda.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel carregar os dados para a venda.',
       })
     } finally {
       setIsLoading(false)
@@ -251,54 +257,21 @@ export function NewSalePage() {
       return
     }
 
-    const productItems = items.filter((item) => item.itemType === SaleItemType.PRODUCT)
-
-    for (const item of productItems) {
-      const availableStock = findProductStock(item.itemId)
-
-      if (item.quantity > availableStock) {
-        setFeedback({
-          type: 'error',
-          message: `Estoque insuficiente para ${item.name}.`,
-        })
-        return
-      }
-    }
-
     setIsSubmitting(true)
 
     try {
-      if (productItems.length) {
-        const updatedProducts = await productRepository.decreaseStockBatch(
-          productItems.map((item) => ({
-            id: item.itemId,
-            quantity: item.quantity,
-          })),
-        )
-
-        if (!updatedProducts) {
-          setFeedback({
-            type: 'error',
-            message: 'Nao foi possivel atualizar o estoque dos produtos vendidos.',
-          })
-          return
-        }
-
-        setProducts(updatedProducts)
-      }
-
-      await saleRepository.create({
+      await salesApi.create({
         items: items.map((item) => ({
           itemType: item.itemType,
           itemId: item.itemId,
-          name: item.name,
           quantity: item.quantity,
-          unitCostPrice: item.unitCostPrice,
-          unitSalePrice: item.unitSalePrice,
         })),
         paymentMethod,
         discount: summary.discount,
       })
+
+      const refreshedProducts = await productsApi.getAll()
+      setProducts(refreshedProducts)
 
       setItems([])
       setDiscount(0)
@@ -307,10 +280,13 @@ export function NewSalePage() {
         type: 'success',
         message: 'Venda finalizada com sucesso.',
       })
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel finalizar a venda.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel finalizar a venda.',
       })
     } finally {
       setIsSubmitting(false)
