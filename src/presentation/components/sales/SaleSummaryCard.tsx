@@ -1,5 +1,6 @@
 import { PaymentMethod } from '@domain/enums'
 
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { formatCurrency, getPaymentMethodLabel } from '@presentation/components/sales/sale-utils'
 
 type SaleSummaryCardProps = {
@@ -92,7 +93,10 @@ export function SaleSummaryCard({
         onClick={() => void onSubmit()}
         className="app-button-primary mt-6 w-full"
       >
-        {isSubmitting ? 'Finalizando venda...' : 'Finalizar venda'}
+        <span className="flex items-center justify-center gap-2">
+          {isSubmitting ? <InlineSpinner className="h-4 w-4" /> : null}
+          <span>{isSubmitting ? 'Finalizando venda...' : 'Finalizar venda'}</span>
+        </span>
       </button>
     </aside>
   )

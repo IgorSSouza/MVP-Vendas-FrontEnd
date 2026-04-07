@@ -302,8 +302,12 @@ export function NewSalePage() {
         description="Adicione produtos e servicos, ajuste os itens da venda e finalize a operacao com calculo imediato de subtotal, total e lucro."
       />
 
-      {feedback ? <FeedbackBanner {...feedback} /> : null}
-      {isLoading ? <LoadingNotice message="Carregando produtos e servicos para a venda..." /> : null}
+      <div className="app-feedback-stack">
+        {feedback ? <FeedbackBanner {...feedback} /> : null}
+        {isLoading ? (
+          <LoadingNotice message="Carregando produtos e servicos para a venda..." />
+        ) : null}
+      </div>
 
       <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
         <div className="space-y-6">

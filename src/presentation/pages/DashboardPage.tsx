@@ -62,9 +62,10 @@ export function DashboardPage() {
         description="Acompanhe os principais numeros de vendas, lucro, estoque baixo e pagamentos em um painel simples e direto para o dia a dia da loja."
       />
 
-      {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
-
-      {isLoading ? <LoadingNotice message="Carregando indicadores do dashboard..." /> : null}
+      <div className="app-feedback-stack">
+        {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
+        {isLoading ? <LoadingNotice message="Carregando indicadores do dashboard..." /> : null}
+      </div>
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         <KpiCard

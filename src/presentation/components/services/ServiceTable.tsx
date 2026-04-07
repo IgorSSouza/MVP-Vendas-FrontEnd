@@ -1,5 +1,6 @@
 import type { Service } from '@domain/entities'
 
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { ServiceStatusBadge } from '@presentation/components/services/ServiceStatusBadge'
 import { formatCurrency } from '@presentation/components/services/service-utils'
 
@@ -89,11 +90,16 @@ export function ServiceTable({
                         onClick={() => void onToggleActive(service)}
                         className="app-button-secondary rounded-xl px-3 py-2"
                       >
-                        {isProcessing
-                          ? 'Atualizando...'
-                          : service.isActive
-                            ? 'Inativar'
-                            : 'Reativar'}
+                        <span className="flex items-center justify-center gap-2">
+                          {isProcessing ? <InlineSpinner className="h-3.5 w-3.5" /> : null}
+                          <span>
+                            {isProcessing
+                              ? 'Atualizando...'
+                              : service.isActive
+                                ? 'Inativar'
+                                : 'Reativar'}
+                          </span>
+                        </span>
                       </button>
                     </div>
                   </td>

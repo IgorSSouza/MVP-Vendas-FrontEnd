@@ -80,6 +80,18 @@
     @apply rounded-3xl border border-dashed border-slate-300 bg-white/90 p-10 text-center shadow-sm shadow-slate-950/5;
   }
 
+  .app-overlay {
+    @apply fixed inset-0 z-40 bg-slate-950/40 backdrop-blur-[2px] transition duration-200;
+  }
+
+  .app-drawer {
+    @apply fixed right-0 top-0 z-50 flex h-full w-full flex-col bg-white shadow-2xl shadow-slate-950/15 transition-transform duration-200 ease-out;
+  }
+
+  .app-feedback-stack {
+    @apply space-y-3;
+  }
+
   .app-table-shell {
     @apply overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5;
   }

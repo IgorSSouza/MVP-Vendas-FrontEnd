@@ -158,7 +158,7 @@ export function ServicesPage() {
         description="Gerencie os servicos da assistencia com uma operacao simples de cadastro, edicao, status e consulta rapida."
       />
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-surface p-6">
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:w-full xl:max-w-3xl">
             <label className="grid gap-2">
@@ -167,7 +167,7 @@ export function ServicesPage() {
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
                 placeholder="Digite o nome ou a descricao"
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                className="app-input"
               />
             </label>
 
@@ -176,7 +176,7 @@ export function ServicesPage() {
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}
-                className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+                className="app-select"
               >
                 <option value="all">Todos</option>
                 <option value="active">Ativos</option>
@@ -188,14 +188,16 @@ export function ServicesPage() {
           <button
             type="button"
             onClick={openCreatePanel}
-            className="w-full rounded-2xl bg-slate-950 px-5 py-3 text-sm font-medium text-white transition hover:bg-slate-800 sm:w-auto"
+            className="app-button-primary w-full px-5 sm:w-auto"
           >
             Novo servico
           </button>
         </div>
 
-        {feedback ? <div className="mt-4"><FeedbackBanner {...feedback} /></div> : null}
-        {isLoading ? <div className="mt-4"><LoadingNotice message="Carregando lista de servicos..." /></div> : null}
+        <div className="mt-4 app-feedback-stack">
+          {feedback ? <FeedbackBanner {...feedback} /> : null}
+          {isLoading ? <LoadingNotice message="Carregando lista de servicos..." /> : null}
+        </div>
       </div>
 
       <ServiceTable

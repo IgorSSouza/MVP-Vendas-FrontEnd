@@ -4,6 +4,7 @@ import { Controller, useForm } from 'react-hook-form'
 import type { Product } from '@domain/entities'
 
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { productFormSchema, type ProductFormValues } from '@presentation/components/products/product-form-schema'
 
 type ProductFormPanelProps = {
@@ -87,7 +88,7 @@ export function ProductFormPanel({
     <>
       <div
         className={[
-          'fixed inset-0 z-40 bg-slate-950/40 transition',
+          'app-overlay',
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
         ].join(' ')}
         onClick={onClose}
@@ -95,7 +96,7 @@ export function ProductFormPanel({
 
       <aside
         className={[
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-slate-200/80 bg-white shadow-2xl shadow-slate-950/15 transition-transform',
+          'app-drawer max-w-md border-l border-slate-200/80',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
@@ -228,7 +229,16 @@ export function ProductFormPanel({
                 disabled={isSubmitting}
                 className="app-button-primary w-full sm:w-auto"
               >
-                {isSubmitting ? 'Salvando...' : product ? 'Salvar alteracoes' : 'Cadastrar produto'}
+                <span className="flex items-center justify-center gap-2">
+                  {isSubmitting ? <InlineSpinner className="h-4 w-4" /> : null}
+                  <span>
+                    {isSubmitting
+                      ? 'Salvando...'
+                      : product
+                        ? 'Salvar alteracoes'
+                        : 'Cadastrar produto'}
+                  </span>
+                </span>
               </button>
             </div>
           </div>

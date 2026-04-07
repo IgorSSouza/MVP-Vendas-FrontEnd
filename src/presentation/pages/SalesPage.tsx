@@ -95,9 +95,11 @@ export function SalesPage() {
         description="Consulte as vendas realizadas, aplique filtros rapidos e visualize os detalhes de cada operacao."
       />
 
-      {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
+      <div className="app-feedback-stack">
+        {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
+      </div>
 
-      <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+      <div className="app-surface p-6">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700">Buscar</span>
@@ -105,7 +107,7 @@ export function SalesPage() {
               value={search}
               onChange={(event) => setSearch(event.target.value)}
               placeholder="Busque pelo identificador da venda"
-              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              className="app-input"
             />
           </label>
 
@@ -114,7 +116,7 @@ export function SalesPage() {
             <select
               value={paymentFilter}
               onChange={(event) => setPaymentFilter(event.target.value as PaymentMethodFilter)}
-              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              className="app-select"
             >
               <option value="all">Todos</option>
               <option value={PaymentMethod.PIX}>Pix</option>
@@ -130,7 +132,7 @@ export function SalesPage() {
               type="date"
               value={startDate}
               onChange={(event) => setStartDate(event.target.value)}
-              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              className="app-input"
             />
           </label>
 
@@ -140,7 +142,7 @@ export function SalesPage() {
               type="date"
               value={endDate}
               onChange={(event) => setEndDate(event.target.value)}
-              className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+              className="app-input"
             />
           </label>
         </div>

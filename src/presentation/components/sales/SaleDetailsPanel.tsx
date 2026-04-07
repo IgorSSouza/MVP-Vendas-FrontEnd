@@ -1,6 +1,7 @@
 import type { Sale } from '@domain/entities'
 
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
+import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import {
   formatCurrency,
@@ -27,7 +28,7 @@ export function SaleDetailsPanel({
     <>
       <div
         className={[
-          'fixed inset-0 z-40 bg-slate-950/40 transition',
+          'app-overlay',
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
         ].join(' ')}
         onClick={onClose}
@@ -35,7 +36,7 @@ export function SaleDetailsPanel({
 
       <aside
         className={[
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-2xl flex-col border-l border-slate-200/80 bg-white shadow-2xl shadow-slate-950/15 transition-transform',
+          'app-drawer max-w-2xl border-l border-slate-200/80',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
@@ -69,9 +70,7 @@ export function SaleDetailsPanel({
           </div>
         ) : errorMessage ? (
           <div className="px-4 py-6 sm:px-6">
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
-              {errorMessage}
-            </div>
+            <FeedbackBanner type="error" message={errorMessage} />
           </div>
         ) : sale ? (
           <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">

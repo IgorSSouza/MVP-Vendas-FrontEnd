@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form'
 
 import type { Service } from '@domain/entities'
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { serviceFormSchema, type ServiceFormValues } from '@presentation/components/services/service-form-schema'
 
 type ServiceFormPanelProps = {
@@ -87,7 +88,7 @@ export function ServiceFormPanel({
     <>
       <div
         className={[
-          'fixed inset-0 z-40 bg-slate-950/40 transition',
+          'app-overlay',
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0',
         ].join(' ')}
         onClick={onClose}
@@ -95,7 +96,7 @@ export function ServiceFormPanel({
 
       <aside
         className={[
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-md flex-col border-l border-slate-200/80 bg-white shadow-2xl shadow-slate-950/15 transition-transform',
+          'app-drawer max-w-md border-l border-slate-200/80',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
@@ -212,7 +213,16 @@ export function ServiceFormPanel({
                 disabled={isSubmitting}
                 className="app-button-primary w-full sm:w-auto"
               >
-                {isSubmitting ? 'Salvando...' : service ? 'Salvar alteracoes' : 'Cadastrar servico'}
+                <span className="flex items-center justify-center gap-2">
+                  {isSubmitting ? <InlineSpinner className="h-4 w-4" /> : null}
+                  <span>
+                    {isSubmitting
+                      ? 'Salvando...'
+                      : service
+                        ? 'Salvar alteracoes'
+                        : 'Cadastrar servico'}
+                  </span>
+                </span>
               </button>
             </div>
           </div>

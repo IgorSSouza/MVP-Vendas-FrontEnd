@@ -1,5 +1,6 @@
 import type { Product } from '@domain/entities'
 
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { ProductStatusBadge } from '@presentation/components/products/ProductStatusBadge'
 import { formatCurrency, isLowStock } from '@presentation/components/products/product-utils'
 
@@ -104,11 +105,16 @@ export function ProductTable({
                         onClick={() => void onToggleActive(product)}
                         className="app-button-secondary rounded-xl px-3 py-2"
                       >
-                        {isProcessing
-                          ? 'Atualizando...'
-                          : product.isActive
-                            ? 'Inativar'
-                            : 'Reativar'}
+                        <span className="flex items-center justify-center gap-2">
+                          {isProcessing ? <InlineSpinner className="h-3.5 w-3.5" /> : null}
+                          <span>
+                            {isProcessing
+                              ? 'Atualizando...'
+                              : product.isActive
+                                ? 'Inativar'
+                                : 'Reativar'}
+                          </span>
+                        </span>
                       </button>
                     </div>
                   </td>
