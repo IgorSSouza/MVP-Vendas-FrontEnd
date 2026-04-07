@@ -164,7 +164,7 @@ export function ServicesPage() {
         <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
           <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_220px] xl:w-full xl:max-w-3xl">
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Buscar</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Buscar</span>
               <input
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
@@ -174,7 +174,7 @@ export function ServicesPage() {
             </label>
 
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Status</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Status</span>
               <select
                 value={statusFilter}
                 onChange={(event) => setStatusFilter(event.target.value as StatusFilter)}

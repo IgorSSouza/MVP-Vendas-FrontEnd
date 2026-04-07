@@ -3,10 +3,10 @@ import { Controller, useForm } from 'react-hook-form'
 
 import type { Product } from '@domain/entities'
 
+import { productFormSchema, type ProductFormValues } from '@presentation/components/products/product-form-schema'
+import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
 import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
-import { AppPortal } from '@presentation/components/shared/AppPortal'
-import { productFormSchema, type ProductFormValues } from '@presentation/components/products/product-form-schema'
 
 type ProductFormPanelProps = {
   isOpen: boolean
@@ -97,20 +97,20 @@ export function ProductFormPanel({
 
       <aside
         className={[
-          'app-drawer max-w-md border-l border-slate-200/80',
+          'app-drawer max-w-md border-l border-slate-200/80 dark:border-slate-800/80',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
         <div className="app-panel-header">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80 dark:text-cyan-300/80">
                 Produtos
               </p>
-              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950">
+              <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                 {product ? 'Editar produto' : 'Novo produto'}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600">
+              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
                 Preencha os dados principais para manter o catálogo organizado.
               </p>
             </div>
@@ -131,7 +131,7 @@ export function ProductFormPanel({
         >
           <div className="grid gap-5 px-4 py-6 sm:px-6">
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Nome</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Nome</span>
               <input
                 {...register('name')}
                 className="app-input"
@@ -141,7 +141,7 @@ export function ProductFormPanel({
             </label>
 
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Categoria</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Categoria</span>
               <input
                 {...register('category')}
                 className="app-input"
@@ -154,7 +154,7 @@ export function ProductFormPanel({
 
             <div className="grid gap-5 sm:grid-cols-2">
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700">Custo</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Custo</span>
                 <Controller
                   control={control}
                   name="costPrice"
@@ -173,7 +173,7 @@ export function ProductFormPanel({
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700">Preço de venda</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Preço de venda</span>
                 <Controller
                   control={control}
                   name="salePrice"
@@ -193,7 +193,7 @@ export function ProductFormPanel({
             </div>
 
             <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700">Estoque</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Estoque</span>
               <input
                 {...register('stockQuantity', { valueAsNumber: true })}
                 type="number"
@@ -206,17 +206,17 @@ export function ProductFormPanel({
               ) : null}
             </label>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 shadow-sm">
+            <label className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
               <input
                 {...register('isActive')}
                 type="checkbox"
                 className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-200"
               />
-              <span className="text-sm font-medium text-slate-700">Produto ativo</span>
+              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Produto ativo</span>
             </label>
           </div>
 
-          <div className="mt-auto border-t border-slate-200/80 px-4 py-5 sm:px-6">
+          <div className="mt-auto border-t border-slate-200/80 px-4 py-5 dark:border-slate-800/80 sm:px-6">
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"

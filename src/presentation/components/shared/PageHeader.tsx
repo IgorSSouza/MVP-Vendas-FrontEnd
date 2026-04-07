@@ -12,13 +12,13 @@ export function PageHeader({ eyebrow, title, description, action }: PageHeaderPr
     <div className="app-surface overflow-hidden p-6 sm:p-8">
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0">
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80">
+          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80 dark:text-cyan-300/80">
             {eyebrow}
           </p>
-          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+          <h1 className="mt-3 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-3xl">
             {title}
           </h1>
-          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 sm:text-base">
+          <p className="mt-3 max-w-3xl text-sm leading-7 text-slate-600 dark:text-slate-400 sm:text-base">
             {description}
           </p>
         </div>

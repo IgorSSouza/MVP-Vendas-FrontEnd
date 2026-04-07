@@ -21,7 +21,7 @@ export function ServiceTable({
 }: ServiceTableProps) {
   if (isLoading) {
     return (
-      <div className="app-empty-state text-sm text-slate-500">
+      <div className="app-empty-state text-sm text-slate-500 dark:text-slate-400">
         Carregando serviços...
       </div>
     )
@@ -30,8 +30,8 @@ export function ServiceTable({
   if (!services.length) {
     return (
       <div className="app-empty-state">
-        <h3 className="text-lg font-semibold text-slate-900">Nenhum serviço encontrado</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Nenhum serviço encontrado</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Ajuste os filtros ou cadastre um novo serviço para iniciar a listagem.
         </p>
       </div>
@@ -60,12 +60,12 @@ export function ServiceTable({
                 <tr key={service.id}>
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-semibold text-slate-900">{service.name}</p>
-                      <p className="mt-1 text-xs text-slate-500">ID: {service.id}</p>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{service.name}</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">ID: {service.id}</p>
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <p className="max-w-md text-sm leading-6 text-slate-600">
+                    <p className="max-w-md text-sm leading-6 text-slate-600 dark:text-slate-400">
                       {service.description || 'Sem descrição cadastrada.'}
                     </p>
                   </td>

@@ -20,8 +20,8 @@ export function SaleItemsList({
   if (!items.length) {
     return (
       <div className="app-empty-state">
-        <h3 className="text-lg font-semibold text-slate-900">Nenhum item na venda</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Nenhum item na venda</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Adicione produtos ou serviços para montar a venda.
         </p>
       </div>
@@ -31,25 +31,27 @@ export function SaleItemsList({
   return (
     <div className="app-surface overflow-hidden">
       <div className="app-panel-header">
-        <h2 className="text-lg font-semibold text-slate-950">Itens da venda</h2>
-        <p className="mt-2 text-sm text-slate-600">Ajuste as quantidades antes de finalizar.</p>
+        <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">Itens da venda</h2>
+        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+          Ajuste as quantidades antes de finalizar.
+        </p>
       </div>
 
-      <div className="divide-y divide-slate-200">
+      <div className="divide-y divide-slate-200 dark:divide-slate-800">
         {items.map((item) => (
           <article
             key={`${item.itemType}-${item.itemId}`}
-            className="px-4 py-5 transition-colors duration-200 hover:bg-slate-50/60 sm:px-6"
+            className="px-4 py-5 transition-colors duration-200 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 sm:px-6"
           >
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
-                  <h3 className="font-semibold text-slate-900">{item.name}</h3>
-                  <span className="app-badge border-slate-200 bg-slate-100 text-slate-600">
+                  <h3 className="font-semibold text-slate-900 dark:text-slate-100">{item.name}</h3>
+                  <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                     {getItemTypeLabel(item.itemType)}
                   </span>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-500">
+                <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
                   <span>Unitário: {formatCurrency(item.unitSalePrice)}</span>
                   <span>Subtotal: {formatCurrency(item.subtotal)}</span>
                   <span>Lucro: {formatCurrency(item.profit)}</span>
@@ -61,7 +63,7 @@ export function SaleItemsList({
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
                 <label className="grid gap-1">
-                  <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400">
+                  <span className="text-xs font-medium uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                     Quantidade
                   </span>
                   <input
@@ -76,7 +78,7 @@ export function SaleItemsList({
                 <button
                   type="button"
                   onClick={() => onRemove(item.itemId)}
-                  className="w-full rounded-xl border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 shadow-sm transition duration-150 hover:bg-rose-50 focus:outline-none focus:ring-4 focus:ring-rose-100 sm:w-auto"
+                  className="w-full rounded-xl border border-rose-200 bg-white px-3 py-2 text-sm font-medium text-rose-700 shadow-sm transition duration-150 hover:bg-rose-50 focus:outline-none focus:ring-4 focus:ring-rose-100 dark:border-rose-500/30 dark:bg-slate-900 dark:text-rose-300 dark:hover:bg-rose-500/10 dark:focus:ring-rose-500/10 sm:w-auto"
                 >
                   Remover
                 </button>

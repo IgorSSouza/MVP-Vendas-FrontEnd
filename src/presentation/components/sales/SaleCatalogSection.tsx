@@ -1,8 +1,8 @@
 import type { Product, Service } from '@domain/entities'
 import { SaleItemType } from '@domain/enums'
 
-import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 import { formatCurrency } from '@presentation/components/sales/sale-utils'
+import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
 
 type SaleCatalogProduct = Product & {
   type: SaleItemType
@@ -32,8 +32,8 @@ export function SaleCatalogSection({
   return (
     <section className="app-surface p-6">
       <div>
-        <h2 className="text-lg font-semibold text-slate-950">{title}</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-600">{description}</p>
+        <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">{title}</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">{description}</p>
       </div>
 
       <div className="mt-5 space-y-3">
@@ -44,23 +44,23 @@ export function SaleCatalogSection({
             return (
               <article
                 key={item.id}
-                className="rounded-2xl border border-slate-200/80 p-4 shadow-sm shadow-slate-950/5 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-950/5"
+                className="rounded-2xl border border-slate-200/80 p-4 shadow-sm shadow-slate-950/5 transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-md hover:shadow-slate-950/5 dark:border-slate-800/80 dark:bg-slate-950/40 dark:shadow-black/20 dark:hover:border-slate-700 dark:hover:bg-slate-900/70"
               >
                 <div className="flex items-start justify-between gap-4">
                   <div>
-                    <h3 className="font-semibold text-slate-900">{item.name}</h3>
-                    <p className="mt-1 text-sm text-slate-500">
+                    <h3 className="font-semibold text-slate-900 dark:text-slate-100">{item.name}</h3>
+                    <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                       {isProduct ? item.category : item.description || 'Sem descrição cadastrada.'}
                     </p>
-                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500">
-                      <span className="app-badge border-slate-200 bg-slate-100 text-slate-600">
+                    <div className="mt-3 flex flex-wrap gap-2 text-xs text-slate-500 dark:text-slate-400">
+                      <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                         Venda: {formatCurrency(item.salePrice)}
                       </span>
-                      <span className="app-badge border-slate-200 bg-slate-100 text-slate-600">
+                      <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                         Custo: {formatCurrency(item.costPrice)}
                       </span>
                       {isProduct ? (
-                        <span className="app-badge border-slate-200 bg-slate-100 text-slate-600">
+                        <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                           Estoque: {item.stockQuantity}
                         </span>
                       ) : null}
@@ -83,7 +83,7 @@ export function SaleCatalogSection({
             )
           })
         ) : (
-          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-6 text-sm text-slate-500">
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-6 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
             {emptyMessage}
           </div>
         )}

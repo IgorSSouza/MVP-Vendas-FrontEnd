@@ -104,7 +104,7 @@ export function SalesPage() {
       <div className="app-surface p-6 app-enter-soft-delay-1">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700">Buscar</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Buscar</span>
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
@@ -114,7 +114,7 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700">Pagamento</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Pagamento</span>
             <select
               value={paymentFilter}
               onChange={(event) => setPaymentFilter(event.target.value as PaymentMethodFilter)}
@@ -129,7 +129,7 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700">Data inicial</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Data inicial</span>
             <input
               type="date"
               value={startDate}
@@ -139,7 +139,7 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700">Data final</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Data final</span>
             <input
               type="date"
               value={endDate}

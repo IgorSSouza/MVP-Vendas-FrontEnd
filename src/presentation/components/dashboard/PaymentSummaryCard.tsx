@@ -1,4 +1,5 @@
 import type { DashboardPaymentSummaryItem } from '@shared/api/dashboard-api'
+
 import { formatCurrency, getPaymentMethodLabel } from '@presentation/components/sales/sale-utils'
 
 type PaymentSummaryCardProps = {
@@ -7,11 +8,11 @@ type PaymentSummaryCardProps = {
 
 export function PaymentSummaryCard({ items }: PaymentSummaryCardProps) {
   return (
-    <section className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+    <section className="app-surface p-6">
       <div>
-        <h2 className="text-lg font-semibold text-slate-900">Vendas por pagamento</h2>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
-          Distribuicao atual das vendas por forma de pagamento.
+        <h2 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Vendas por pagamento</h2>
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
+          Distribuição atual das vendas por forma de pagamento.
         </p>
       </div>
 
@@ -19,16 +20,16 @@ export function PaymentSummaryCard({ items }: PaymentSummaryCardProps) {
         {items.map((item) => (
           <div
             key={item.paymentMethod}
-            className="flex flex-col gap-3 rounded-2xl border border-slate-200 px-4 py-4 sm:flex-row sm:items-center sm:justify-between"
+            className="flex flex-col gap-3 rounded-2xl border border-slate-200 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/40 sm:flex-row sm:items-center sm:justify-between"
           >
             <div>
-              <p className="font-medium text-slate-900">
+              <p className="font-medium text-slate-900 dark:text-slate-100">
                 {getPaymentMethodLabel(item.paymentMethod)}
               </p>
-              <p className="mt-1 text-sm text-slate-500">{item.count} venda(s)</p>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.count} venda(s)</p>
             </div>
 
-            <strong className="text-sm text-slate-900 sm:text-right">
+            <strong className="text-sm text-slate-900 dark:text-slate-100 sm:text-right">
               {formatCurrency(item.total)}
             </strong>
           </div>

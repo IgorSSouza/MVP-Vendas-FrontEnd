@@ -21,7 +21,7 @@ export function ProductTable({
 }: ProductTableProps) {
   if (isLoading) {
     return (
-      <div className="app-empty-state text-sm text-slate-500">
+      <div className="app-empty-state text-sm text-slate-500 dark:text-slate-400">
         Carregando produtos...
       </div>
     )
@@ -30,8 +30,8 @@ export function ProductTable({
   if (!products.length) {
     return (
       <div className="app-empty-state">
-        <h3 className="text-lg font-semibold text-slate-900">Nenhum produto encontrado</h3>
-        <p className="mt-2 text-sm leading-6 text-slate-500">
+        <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Nenhum produto encontrado</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
           Ajuste os filtros ou cadastre um novo produto para iniciar a listagem.
         </p>
       </div>
@@ -50,7 +50,7 @@ export function ProductTable({
               <th className="px-6 py-4">Venda</th>
               <th className="px-6 py-4">Estoque</th>
               <th className="px-6 py-4">Status</th>
-              <th className="px-6 py-4 text-right">Acoes</th>
+              <th className="px-6 py-4 text-right">Ações</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-200">
@@ -62,8 +62,8 @@ export function ProductTable({
                 <tr key={product.id}>
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-semibold text-slate-900">{product.name}</p>
-                      <p className="mt-1 text-xs text-slate-500">ID: {product.id}</p>
+                      <p className="font-semibold text-slate-900 dark:text-slate-100">{product.name}</p>
+                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">ID: {product.id}</p>
                     </div>
                   </td>
                   <td className="px-6 py-4">{product.category}</td>
@@ -74,13 +74,13 @@ export function ProductTable({
                       <span
                         className={[
                           'font-medium',
-                          lowStock ? 'text-amber-600' : 'text-slate-700',
+                          lowStock ? 'text-amber-500 dark:text-amber-300' : 'text-slate-700 dark:text-slate-300',
                         ].join(' ')}
                       >
                         {product.stockQuantity}
                       </span>
                       {lowStock ? (
-                        <span className="app-badge border-amber-200 bg-amber-50 text-amber-800">
+                        <span className="app-badge border-amber-200 bg-amber-50 text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
                           Baixo
                         </span>
                       ) : null}
