@@ -1,6 +1,7 @@
 import type { Sale } from '@domain/entities'
 
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
+import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import {
   formatCurrency,
   formatDateTime,
@@ -10,10 +11,18 @@ import {
 type SaleDetailsPanelProps = {
   sale: Sale | null
   isOpen: boolean
+  isLoading?: boolean
+  errorMessage?: string | null
   onClose: () => void
 }
 
-export function SaleDetailsPanel({ sale, isOpen, onClose }: SaleDetailsPanelProps) {
+export function SaleDetailsPanel({
+  sale,
+  isOpen,
+  isLoading = false,
+  errorMessage = null,
+  onClose,
+}: SaleDetailsPanelProps) {
   return (
     <>
       <div
@@ -54,7 +63,17 @@ export function SaleDetailsPanel({ sale, isOpen, onClose }: SaleDetailsPanelProp
           </div>
         </div>
 
-        {sale ? (
+        {isLoading ? (
+          <div className="px-4 py-6 sm:px-6">
+            <LoadingNotice message="Carregando detalhes da venda..." />
+          </div>
+        ) : errorMessage ? (
+          <div className="px-4 py-6 sm:px-6">
+            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-700">
+              {errorMessage}
+            </div>
+          </div>
+        ) : sale ? (
           <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
@@ -163,7 +182,13 @@ export function SaleDetailsPanel({ sale, isOpen, onClose }: SaleDetailsPanelProp
               </div>
             </div>
           </div>
-        ) : null}
+        ) : (
+          <div className="px-4 py-6 sm:px-6">
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-sm text-slate-500">
+              Selecione uma venda para visualizar os detalhes.
+            </div>
+          </div>
+        )}
       </aside>
     </>
   )

@@ -2,23 +2,28 @@ import { useEffect, useMemo, useState } from 'react'
 
 import type { Sale } from '@domain/entities'
 import { PaymentMethod } from '@domain/enums'
-import { saleRepository } from '@infra/mock/repositories'
+import { salesApi, type SaleListItem } from '@shared/api/sales-api'
+import { ApiError } from '@shared/api/http-client'
 import { SaleDetailsPanel } from '@presentation/components/sales/SaleDetailsPanel'
 import { SalesTable } from '@presentation/components/sales/SalesTable'
+import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
 
 type PaymentMethodFilter = 'all' | PaymentMethod
 
 export function SalesPage() {
-  const [sales, setSales] = useState<Sale[]>([])
+  const [sales, setSales] = useState<SaleListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethodFilter>('all')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
+  const [feedback, setFeedback] = useState<{ type: 'error'; message: string } | null>(null)
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
+  const [isDetailsLoading, setIsDetailsLoading] = useState(false)
+  const [detailsError, setDetailsError] = useState<string | null>(null)
 
   useEffect(() => {
     void loadSales()
@@ -27,10 +32,7 @@ export function SalesPage() {
   const filteredSales = useMemo(() => {
     return sales.filter((sale) => {
       const normalizedSearch = search.toLowerCase()
-      const matchesSearch =
-        !normalizedSearch ||
-        sale.id.toLowerCase().includes(normalizedSearch) ||
-        sale.items.some((item) => item.name.toLowerCase().includes(normalizedSearch))
+      const matchesSearch = !normalizedSearch || sale.id.toLowerCase().includes(normalizedSearch)
 
       const matchesPayment =
         paymentFilter === 'all' || sale.paymentMethod === paymentFilter
@@ -45,23 +47,49 @@ export function SalesPage() {
 
   async function loadSales() {
     setIsLoading(true)
+    setFeedback(null)
 
     try {
-      const data = await saleRepository.getAll()
+      const data = await salesApi.getAll()
       setSales(data)
+    } catch (error) {
+      setFeedback({
+        type: 'error',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel carregar o historico de vendas.',
+      })
     } finally {
       setIsLoading(false)
     }
   }
 
-  function openDetails(sale: Sale) {
-    setSelectedSale(sale)
+  async function openDetails(sale: SaleListItem) {
     setIsDetailsOpen(true)
+    setIsDetailsLoading(true)
+    setDetailsError(null)
+    setSelectedSale(null)
+
+    try {
+      const saleDetails = await salesApi.getById(sale.id)
+      setSelectedSale(saleDetails)
+    } catch (error) {
+      setDetailsError(
+        error instanceof ApiError
+          ? error.message
+          : 'Nao foi possivel carregar os detalhes da venda.',
+      )
+    } finally {
+      setIsDetailsLoading(false)
+    }
   }
 
   function closeDetails() {
     setIsDetailsOpen(false)
     setSelectedSale(null)
+    setDetailsError(null)
+    setIsDetailsLoading(false)
   }
 
   return (
@@ -72,6 +100,8 @@ export function SalesPage() {
         description="Consulte as vendas realizadas, aplique filtros rapidos e visualize os detalhes de cada operacao."
       />
 
+      {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
+
       <div className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
           <label className="grid gap-2">
@@ -79,7 +109,7 @@ export function SalesPage() {
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Busque por ID ou nome do item"
+              placeholder="Busque pelo identificador da venda"
               className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
             />
           </label>
@@ -129,7 +159,13 @@ export function SalesPage() {
 
       <SalesTable sales={filteredSales} isLoading={isLoading} onOpenDetails={openDetails} />
 
-      <SaleDetailsPanel sale={selectedSale} isOpen={isDetailsOpen} onClose={closeDetails} />
+      <SaleDetailsPanel
+        sale={selectedSale}
+        isOpen={isDetailsOpen}
+        isLoading={isDetailsLoading}
+        errorMessage={detailsError}
+        onClose={closeDetails}
+      />
     </section>
   )
 }

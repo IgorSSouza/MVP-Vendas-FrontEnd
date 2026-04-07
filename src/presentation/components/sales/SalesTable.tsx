@@ -1,12 +1,12 @@
-import type { Sale } from '@domain/entities'
+import type { SaleListItem } from '@shared/api/sales-api'
 
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
 import { formatCurrency, formatDateTime } from '@presentation/components/sales/sale-utils'
 
 type SalesTableProps = {
-  sales: Sale[]
+  sales: SaleListItem[]
   isLoading: boolean
-  onOpenDetails: (sale: Sale) => void
+  onOpenDetails: (sale: SaleListItem) => void
 }
 
 export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps) {
@@ -52,13 +52,11 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-semibold text-slate-900">{sale.id}</p>
-                    <p className="mt-1 text-xs text-slate-500">
-                      {sale.items[0]?.name ?? 'Sem itens'}
-                    </p>
+                    <p className="mt-1 text-xs text-slate-500">Venda registrada na API</p>
                   </div>
                 </td>
                 <td className="px-6 py-4">{formatDateTime(sale.createdAt)}</td>
-                <td className="px-6 py-4">{sale.items.length}</td>
+                <td className="px-6 py-4">{sale.itemCount}</td>
                 <td className="px-6 py-4">
                   <SalePaymentBadge paymentMethod={sale.paymentMethod} />
                 </td>
