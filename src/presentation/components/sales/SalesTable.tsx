@@ -12,7 +12,7 @@ type SalesTableProps = {
 export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps) {
   if (isLoading) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-empty-state text-sm text-slate-500">
         Carregando vendas...
       </div>
     )
@@ -20,7 +20,7 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
 
   if (!sales.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+      <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900">Nenhuma venda encontrada</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Ajuste os filtros ou realize uma nova venda para popular o historico.
@@ -30,11 +30,11 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="app-table-shell">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <table className="app-table">
+          <thead>
+            <tr>
               <th className="px-6 py-4">Venda</th>
               <th className="px-6 py-4">Data</th>
               <th className="px-6 py-4">Itens</th>
@@ -48,7 +48,7 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
           </thead>
           <tbody className="divide-y divide-slate-200">
             {sales.map((sale) => (
-              <tr key={sale.id} className="text-sm text-slate-600">
+              <tr key={sale.id}>
                 <td className="px-6 py-4">
                   <div>
                     <p className="font-semibold text-slate-900">{sale.id}</p>
@@ -77,7 +77,7 @@ export function SalesTable({ sales, isLoading, onOpenDetails }: SalesTableProps)
                     <button
                       type="button"
                       onClick={() => onOpenDetails(sale)}
-                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50"
+                      className="app-button-secondary rounded-xl px-3 py-2"
                     >
                       Ver detalhes
                     </button>

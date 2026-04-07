@@ -1,8 +1,8 @@
-import type { DashboardMetrics } from '@presentation/components/dashboard/dashboard-selectors'
+import type { DashboardPaymentSummaryItem } from '@shared/api/dashboard-api'
 import { formatCurrency, getPaymentMethodLabel } from '@presentation/components/sales/sale-utils'
 
 type PaymentSummaryCardProps = {
-  items: DashboardMetrics['paymentSummary']
+  items: DashboardPaymentSummaryItem[]
 }
 
 export function PaymentSummaryCard({ items }: PaymentSummaryCardProps) {

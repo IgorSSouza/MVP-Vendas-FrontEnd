@@ -20,7 +20,7 @@ export function ProductTable({
 }: ProductTableProps) {
   if (isLoading) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-empty-state text-sm text-slate-500">
         Carregando produtos...
       </div>
     )
@@ -28,7 +28,7 @@ export function ProductTable({
 
   if (!products.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+      <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900">Nenhum produto encontrado</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Ajuste os filtros ou cadastre um novo produto para iniciar a listagem.
@@ -38,11 +38,11 @@ export function ProductTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="app-table-shell">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <table className="app-table">
+          <thead>
+            <tr>
               <th className="px-6 py-4">Produto</th>
               <th className="px-6 py-4">Categoria</th>
               <th className="px-6 py-4">Custo</th>
@@ -58,7 +58,7 @@ export function ProductTable({
               const isProcessing = processingId === product.id
 
               return (
-                <tr key={product.id} className="text-sm text-slate-600">
+                <tr key={product.id}>
                   <td className="px-6 py-4">
                     <div>
                       <p className="font-semibold text-slate-900">{product.name}</p>
@@ -79,7 +79,7 @@ export function ProductTable({
                         {product.stockQuantity}
                       </span>
                       {lowStock ? (
-                        <span className="rounded-full bg-amber-100 px-2 py-1 text-xs font-medium text-amber-700">
+                        <span className="app-badge border-amber-200 bg-amber-50 text-amber-800">
                           Baixo
                         </span>
                       ) : null}
@@ -94,7 +94,7 @@ export function ProductTable({
                         type="button"
                         disabled={isProcessing}
                         onClick={() => onEdit(product)}
-                        className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="app-button-secondary rounded-xl px-3 py-2"
                       >
                         Editar
                       </button>
@@ -102,7 +102,7 @@ export function ProductTable({
                         type="button"
                         disabled={isProcessing}
                         onClick={() => void onToggleActive(product)}
-                        className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
+                        className="app-button-secondary rounded-xl px-3 py-2"
                       >
                         {isProcessing
                           ? 'Atualizando...'

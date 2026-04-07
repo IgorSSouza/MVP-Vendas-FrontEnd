@@ -7,7 +7,7 @@ import { ProductTable } from '@presentation/components/products/ProductTable'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
-import { ApiError } from '@shared/api/http-client'
+import { getApiErrorMessage } from '@shared/api/http-client'
 import { productsApi } from '@shared/api/products-api'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
@@ -46,22 +46,24 @@ export function ProductsPage() {
     })
   }, [products, search, statusFilter])
 
-  async function loadProducts() {
-    setIsLoading(true)
+  async function loadProducts(showLoading = true) {
+    if (showLoading) {
+      setIsLoading(true)
+    }
 
     try {
       const data = await productsApi.getAll()
       setProducts(data)
+      setFeedback(null)
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel carregar os produtos.',
+        message: getApiErrorMessage(error, 'Nao foi possivel carregar os produtos.'),
       })
     } finally {
-      setIsLoading(false)
+      if (showLoading) {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -103,16 +105,13 @@ export function ProductsPage() {
         })
       }
 
-      await loadProducts()
+      await loadProducts(false)
       setIsPanelOpen(false)
       setSelectedProduct(null)
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel salvar o produto.',
+        message: getApiErrorMessage(error, 'Nao foi possivel salvar o produto.'),
       })
     } finally {
       setIsSubmitting(false)
@@ -125,7 +124,7 @@ export function ProductsPage() {
 
     try {
       await productsApi.toggleStatus(product.id)
-      await loadProducts()
+      await loadProducts(false)
       setFeedback({
         type: 'success',
         message: product.isActive
@@ -135,10 +134,10 @@ export function ProductsPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel alterar o status do produto.',
+        message: getApiErrorMessage(
+          error,
+          'Nao foi possivel alterar o status do produto.',
+        ),
       })
     } finally {
       setProcessingProductId(null)

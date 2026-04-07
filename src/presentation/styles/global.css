@@ -23,10 +23,84 @@
   }
 
   body {
-    @apply m-0 min-h-screen bg-slate-100 text-slate-900;
+    @apply m-0 min-h-screen bg-slate-50 text-slate-900;
+    background-image: linear-gradient(to bottom, rgba(248, 250, 252, 0.96), rgba(241, 245, 249, 0.9));
   }
 
   #root {
     @apply min-h-screen;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+}
+
+@layer components {
+  .app-surface {
+    @apply rounded-3xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5;
+  }
+
+  .app-surface-muted {
+    @apply rounded-3xl border border-slate-200/70 bg-slate-50/80 shadow-sm shadow-slate-950/5;
+  }
+
+  .app-panel-header {
+    @apply border-b border-slate-200/80 px-5 py-5 sm:px-6;
+  }
+
+  .app-input {
+    @apply w-full rounded-2xl border border-slate-300/80 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-cyan-700/40 focus:ring-4 focus:ring-cyan-100/80 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500;
+  }
+
+  .app-select {
+    @apply app-input appearance-none pr-10;
+  }
+
+  .app-textarea {
+    @apply app-input min-h-[112px] resize-y;
+  }
+
+  .app-button-primary {
+    @apply inline-flex items-center justify-center rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white shadow-sm shadow-slate-950/10 transition hover:bg-slate-800 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .app-button-secondary {
+    @apply inline-flex items-center justify-center rounded-2xl border border-slate-300/80 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-slate-400/70 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .app-badge {
+    @apply inline-flex items-center rounded-full border px-2.5 py-1 text-xs font-semibold tracking-[0.02em];
+  }
+
+  .app-empty-state {
+    @apply rounded-3xl border border-dashed border-slate-300 bg-white/90 p-10 text-center shadow-sm shadow-slate-950/5;
+  }
+
+  .app-table-shell {
+    @apply overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm shadow-slate-950/5;
+  }
+
+  .app-table {
+    @apply min-w-full divide-y divide-slate-200;
+  }
+
+  .app-table thead {
+    @apply bg-slate-50/90;
+  }
+
+  .app-table thead tr {
+    @apply text-left text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500;
+  }
+
+  .app-table tbody {
+    @apply divide-y divide-slate-200;
+  }
+
+  .app-table tbody tr {
+    @apply text-sm text-slate-600 transition hover:bg-slate-50/70;
   }
 }

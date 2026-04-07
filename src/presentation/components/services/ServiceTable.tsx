@@ -20,7 +20,7 @@ export function ServiceTable({
 }: ServiceTableProps) {
   if (isLoading) {
     return (
-      <div className="rounded-3xl border border-slate-200 bg-white p-10 text-center text-sm text-slate-500 shadow-sm">
+      <div className="app-empty-state text-sm text-slate-500">
         Carregando servicos...
       </div>
     )
@@ -28,7 +28,7 @@ export function ServiceTable({
 
   if (!services.length) {
     return (
-      <div className="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
+      <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900">Nenhum servico encontrado</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500">
           Ajuste os filtros ou cadastre um novo servico para iniciar a listagem.
@@ -38,11 +38,11 @@ export function ServiceTable({
   }
 
   return (
-    <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
+    <div className="app-table-shell">
       <div className="overflow-x-auto">
-        <table className="min-w-full divide-y divide-slate-200">
-          <thead className="bg-slate-50">
-            <tr className="text-left text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+        <table className="app-table">
+          <thead>
+            <tr>
               <th className="px-6 py-4">Servico</th>
               <th className="px-6 py-4">Descricao</th>
               <th className="px-6 py-4">Custo</th>
@@ -56,49 +56,49 @@ export function ServiceTable({
               const isProcessing = processingId === service.id
 
               return (
-              <tr key={service.id} className="text-sm text-slate-600">
-                <td className="px-6 py-4">
-                  <div>
-                    <p className="font-semibold text-slate-900">{service.name}</p>
-                    <p className="mt-1 text-xs text-slate-500">ID: {service.id}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-4">
-                  <p className="max-w-md text-sm leading-6 text-slate-600">
-                    {service.description || 'Sem descricao cadastrada.'}
-                  </p>
-                </td>
-                <td className="px-6 py-4">{formatCurrency(service.costPrice)}</td>
-                <td className="px-6 py-4">{formatCurrency(service.salePrice)}</td>
-                <td className="px-6 py-4">
-                  <ServiceStatusBadge isActive={service.isActive} />
-                </td>
-                <td className="px-6 py-4">
-                  <div className="flex justify-end gap-2">
-                    <button
-                      type="button"
-                      disabled={isProcessing}
-                      onClick={() => onEdit(service)}
-                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      Editar
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isProcessing}
-                      onClick={() => void onToggleActive(service)}
-                      className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-600 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"
-                    >
-                      {isProcessing
-                        ? 'Atualizando...'
-                        : service.isActive
-                          ? 'Inativar'
-                          : 'Reativar'}
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            )})}
+                <tr key={service.id}>
+                  <td className="px-6 py-4">
+                    <div>
+                      <p className="font-semibold text-slate-900">{service.name}</p>
+                      <p className="mt-1 text-xs text-slate-500">ID: {service.id}</p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <p className="max-w-md text-sm leading-6 text-slate-600">
+                      {service.description || 'Sem descricao cadastrada.'}
+                    </p>
+                  </td>
+                  <td className="px-6 py-4">{formatCurrency(service.costPrice)}</td>
+                  <td className="px-6 py-4">{formatCurrency(service.salePrice)}</td>
+                  <td className="px-6 py-4">
+                    <ServiceStatusBadge isActive={service.isActive} />
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex justify-end gap-2">
+                      <button
+                        type="button"
+                        disabled={isProcessing}
+                        onClick={() => onEdit(service)}
+                        className="app-button-secondary rounded-xl px-3 py-2"
+                      >
+                        Editar
+                      </button>
+                      <button
+                        type="button"
+                        disabled={isProcessing}
+                        onClick={() => void onToggleActive(service)}
+                        className="app-button-secondary rounded-xl px-3 py-2"
+                      >
+                        {isProcessing
+                          ? 'Atualizando...'
+                          : service.isActive
+                            ? 'Inativar'
+                            : 'Reativar'}
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )})}
           </tbody>
         </table>
       </div>

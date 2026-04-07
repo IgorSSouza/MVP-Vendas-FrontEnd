@@ -6,7 +6,7 @@ type SalePaymentBadgeProps = {
 
 export function SalePaymentBadge({ paymentMethod }: SalePaymentBadgeProps) {
   return (
-    <span className="inline-flex rounded-full bg-cyan-50 px-2.5 py-1 text-xs font-semibold text-cyan-700">
+    <span className="app-badge border-cyan-200 bg-cyan-50 text-cyan-800">
       {getPaymentMethodLabel(paymentMethod)}
     </span>
   )

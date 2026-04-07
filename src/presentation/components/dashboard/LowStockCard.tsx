@@ -1,7 +1,7 @@
-import type { Product } from '@domain/entities'
+import type { DashboardLowStockProduct } from '@shared/api/dashboard-api'
 
 type LowStockCardProps = {
-  products: Product[]
+  products: DashboardLowStockProduct[]
 }
 
 export function LowStockCard({ products }: LowStockCardProps) {

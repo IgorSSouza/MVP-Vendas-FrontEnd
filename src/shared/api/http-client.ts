@@ -42,14 +42,53 @@ function extractErrorMessage(payload: unknown) {
   return null
 }
 
+function buildApiUrl(path: string) {
+  if (/^https?:\/\//i.test(path)) {
+    return path
+  }
+
+  const normalizedBaseUrl = API_BASE_URL.replace(/\/$/, '')
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const baseEndsWithApi = normalizedBaseUrl.endsWith('/api')
+  const pathStartsWithApi =
+    normalizedPath === '/api' || normalizedPath.startsWith('/api/')
+
+  if (!normalizedBaseUrl) {
+    return normalizedPath
+  }
+
+  if (baseEndsWithApi && pathStartsWithApi) {
+    return `${normalizedBaseUrl}${normalizedPath.slice(4)}`
+  }
+
+  return `${normalizedBaseUrl}${normalizedPath}`
+}
+
+export function getApiErrorMessage(error: unknown, fallbackMessage: string) {
+  if (error instanceof ApiError) {
+    return error.message
+  }
+
+  return fallbackMessage
+}
+
 export async function httpRequest<T>(path: string, init?: RequestInit) {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...init?.headers,
-    },
-    ...init,
-  })
+  let response: Response
+
+  try {
+    response = await fetch(buildApiUrl(path), {
+      headers: {
+        'Content-Type': 'application/json',
+        ...init?.headers,
+      },
+      ...init,
+    })
+  } catch {
+    throw new ApiError(
+      'Nao foi possivel conectar com a API. Verifique se o backend esta em execucao e se a configuracao da URL esta correta.',
+      0,
+    )
+  }
 
   const rawText = await response.text()
   let payload: unknown = null

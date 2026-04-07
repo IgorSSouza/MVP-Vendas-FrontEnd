@@ -35,20 +35,20 @@ export function SaleDetailsPanel({
 
       <aside
         className={[
-          'fixed right-0 top-0 z-50 flex h-full w-full max-w-2xl flex-col border-l border-slate-200 bg-white shadow-2xl transition-transform',
+          'fixed right-0 top-0 z-50 flex h-full w-full max-w-2xl flex-col border-l border-slate-200/80 bg-white shadow-2xl shadow-slate-950/15 transition-transform',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
-        <div className="border-b border-slate-200 px-4 py-5 sm:px-6">
+        <div className="app-panel-header">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div className="min-w-0">
-              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.28em] text-cyan-800/80">
                 Detalhes da venda
               </p>
-              <h2 className="mt-2 break-all text-xl font-semibold text-slate-900">
+              <h2 className="mt-2 break-all text-xl font-semibold tracking-tight text-slate-950">
                 {sale?.id ?? 'Venda'}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-500">
+              <p className="mt-2 text-sm leading-6 text-slate-600">
                 Consulte os dados principais e os itens desta venda.
               </p>
             </div>
@@ -56,7 +56,7 @@ export function SaleDetailsPanel({
             <button
               type="button"
               onClick={onClose}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-50 sm:w-auto"
+              className="app-button-secondary w-full rounded-xl px-3 py-2 sm:w-auto"
             >
               Fechar
             </button>
@@ -76,7 +76,7 @@ export function SaleDetailsPanel({
         ) : sale ? (
           <div className="flex-1 overflow-y-auto px-4 py-6 sm:px-6">
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Data
                 </p>
@@ -85,7 +85,7 @@ export function SaleDetailsPanel({
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Pagamento
                 </p>
@@ -94,7 +94,7 @@ export function SaleDetailsPanel({
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Total
                 </p>
@@ -103,7 +103,7 @@ export function SaleDetailsPanel({
                 </p>
               </div>
 
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                   Lucro
                 </p>
@@ -118,8 +118,8 @@ export function SaleDetailsPanel({
               </div>
             </div>
 
-            <div className="mt-6 rounded-3xl border border-slate-200">
-              <div className="grid gap-4 border-b border-slate-200 bg-slate-50 px-4 py-4 sm:grid-cols-2 sm:px-6 xl:grid-cols-4">
+            <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm shadow-slate-950/5">
+              <div className="grid gap-4 border-b border-slate-200/80 bg-slate-50/80 px-4 py-4 sm:grid-cols-2 sm:px-6 xl:grid-cols-4">
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
                     Subtotal

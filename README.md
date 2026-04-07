@@ -7,7 +7,7 @@ Sistema front-end para operacao de vendas, servicos e acompanhamento gerencial d
 Este projeto organiza a base de um MVP de vendas com foco em:
 
 - cadastro simples de produtos e servicos
-- criacao de vendas em memoria
+- criacao de vendas
 - controle basico de estoque para produtos
 - historico de vendas
 - visao inicial de dashboard
@@ -27,13 +27,14 @@ Este projeto organiza a base de um MVP de vendas com foco em:
 - dashboard com indicadores principais, resumo por forma de pagamento, estoque baixo e vendas recentes
 - modulo de produtos com listagem, filtros, cadastro, edicao e ativacao ou inativacao
 - modulo de servicos com listagem, filtros, cadastro, edicao e ativacao ou inativacao
-- fluxo de nova venda com produtos, servicos, desconto, forma de pagamento e baixa de estoque
+- fluxo de nova venda com produtos, servicos, desconto, forma de pagamento e baixa de estoque pela API
 - historico de vendas com filtros simples e painel lateral de detalhes
 
 ## Integracao com API
 
-- a feature `Products` pode usar a API real via `VITE_API_BASE_URL`
-- as demais features continuam usando dados mockados em memoria nesta etapa
+- `Products`, `Services`, `Sales / New Sale`, `Sales` e `Dashboard` usam a API real
+- a configuracao principal fica em `VITE_API_BASE_URL`
+- no ambiente local com Vite, o recomendado e usar proxy para evitar problemas de CORS
 
 Exemplo de configuracao local:
 
@@ -48,9 +49,19 @@ VITE_API_BASE_URL=/api
 VITE_API_PROXY_TARGET=http://localhost:5002
 ```
 
-Se precisar chamar a API diretamente fora do proxy, voce ainda pode ajustar `VITE_API_BASE_URL` para a URL completa.
+Se precisar chamar a API diretamente fora do proxy, voce tambem pode usar:
+
+```env
+VITE_API_BASE_URL=http://localhost:5002
+```
+
+O cliente HTTP trata tanto caminhos com `/api/...` quanto base URL em `/api` ou URL completa.
 
 ## Como rodar o projeto
+
+1. Suba a API .NET 8 no endereco configurado em `VITE_API_PROXY_TARGET` ou `VITE_API_BASE_URL`
+2. No front-end, crie o arquivo `.env` com base em `.env.example`
+3. Rode:
 
 ```bash
 npm install
@@ -93,11 +104,9 @@ src/
 
 ## Observacoes sobre dados mockados em memoria
 
-- Products pode usar API real quando a base URL estiver configurada
-- servicos e vendas continuam com repositories em memoria nesta etapa
-- produtos, servicos e vendas partem de seeds locais
-- novas vendas afetam o estoque em memoria durante a sessao atual
-- ao recarregar a aplicacao, os dados voltam ao estado inicial dos mocks
+- a infraestrutura mock continua no projeto para apoio local e evolucao incremental
+- as features principais integradas ja usam a API real
+- se a API estiver indisponivel, as telas integradas exibem erro de conexao em vez de cair silenciosamente
 
 ## Backlog pos-MVP
 

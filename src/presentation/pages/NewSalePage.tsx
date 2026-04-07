@@ -15,7 +15,7 @@ import { SaleSummaryCard } from '@presentation/components/sales/SaleSummaryCard'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
-import { ApiError } from '@shared/api/http-client'
+import { getApiErrorMessage } from '@shared/api/http-client'
 import { productsApi } from '@shared/api/products-api'
 import { salesApi } from '@shared/api/sales-api'
 import { servicesApi } from '@shared/api/services-api'
@@ -66,8 +66,10 @@ export function NewSalePage() {
     }
   }, [discount, items])
 
-  async function loadData() {
-    setIsLoading(true)
+  async function loadData(showLoading = true) {
+    if (showLoading) {
+      setIsLoading(true)
+    }
 
     try {
       const [productData, serviceData] = await Promise.all([
@@ -77,16 +79,19 @@ export function NewSalePage() {
 
       setProducts(productData)
       setServices(serviceData)
+      setFeedback(null)
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel carregar os dados para a venda.',
+        message: getApiErrorMessage(
+          error,
+          'Nao foi possivel carregar os dados para a venda.',
+        ),
       })
     } finally {
-      setIsLoading(false)
+      if (showLoading) {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -270,8 +275,7 @@ export function NewSalePage() {
         discount: summary.discount,
       })
 
-      const refreshedProducts = await productsApi.getAll()
-      setProducts(refreshedProducts)
+      await loadData(false)
 
       setItems([])
       setDiscount(0)
@@ -283,10 +287,7 @@ export function NewSalePage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel finalizar a venda.',
+        message: getApiErrorMessage(error, 'Nao foi possivel finalizar a venda.'),
       })
     } finally {
       setIsSubmitting(false)

@@ -28,9 +28,9 @@ export function SaleSummaryCard({
   onSubmit,
 }: SaleSummaryCardProps) {
   return (
-    <aside className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-slate-900">Resumo da venda</h2>
-      <p className="mt-2 text-sm leading-6 text-slate-500">
+    <aside className="app-surface p-6">
+      <h2 className="text-lg font-semibold text-slate-950">Resumo da venda</h2>
+      <p className="mt-2 text-sm leading-6 text-slate-600">
         Revise os valores e finalize a operacao.
       </p>
 
@@ -42,7 +42,7 @@ export function SaleSummaryCard({
             onChange={(event) =>
               onPaymentMethodChange(event.target.value as PaymentMethod)
             }
-            className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+            className="app-select"
           >
             {Object.values(PaymentMethod).map((method) => (
               <option key={method} value={method}>
@@ -60,12 +60,12 @@ export function SaleSummaryCard({
             step="0.01"
             value={discount}
             onChange={(event) => onDiscountChange(Number(event.target.value))}
-            className="rounded-2xl border border-slate-200 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-cyan-500 focus:ring-2 focus:ring-cyan-100"
+            className="app-input"
           />
         </label>
       </div>
 
-      <div className="mt-6 space-y-3 rounded-2xl bg-slate-50 p-4">
+      <div className="mt-6 space-y-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4">
         <div className="flex items-center justify-between text-sm text-slate-600">
           <span>Subtotal</span>
           <strong className="text-slate-900">{formatCurrency(subtotal)}</strong>
@@ -90,7 +90,7 @@ export function SaleSummaryCard({
         type="button"
         disabled={!canSubmit || isSubmitting}
         onClick={() => void onSubmit()}
-        className="mt-6 w-full rounded-2xl bg-slate-950 px-4 py-3 text-sm font-medium text-white transition hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-60"
+        className="app-button-primary mt-6 w-full"
       >
         {isSubmitting ? 'Finalizando venda...' : 'Finalizar venda'}
       </button>

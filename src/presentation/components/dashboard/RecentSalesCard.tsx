@@ -1,10 +1,10 @@
-import type { Sale } from '@domain/entities'
+import type { DashboardRecentSale } from '@shared/api/dashboard-api'
 
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
 import { formatCurrency, formatDateTime } from '@presentation/components/sales/sale-utils'
 
 type RecentSalesCardProps = {
-  sales: Sale[]
+  sales: DashboardRecentSale[]
 }
 
 export function RecentSalesCard({ sales }: RecentSalesCardProps) {

@@ -2,13 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 
 import type { Sale } from '@domain/entities'
 import { PaymentMethod } from '@domain/enums'
-import { salesApi, type SaleListItem } from '@shared/api/sales-api'
-import { ApiError } from '@shared/api/http-client'
 import { SaleDetailsPanel } from '@presentation/components/sales/SaleDetailsPanel'
 import { SalesTable } from '@presentation/components/sales/SalesTable'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
+import { getApiErrorMessage } from '@shared/api/http-client'
+import { salesApi, type SaleListItem } from '@shared/api/sales-api'
 
 type PaymentMethodFilter = 'all' | PaymentMethod
 
@@ -55,10 +55,7 @@ export function SalesPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel carregar o historico de vendas.',
+        message: getApiErrorMessage(error, 'Nao foi possivel carregar o historico de vendas.'),
       })
     } finally {
       setIsLoading(false)
@@ -76,9 +73,7 @@ export function SalesPage() {
       setSelectedSale(saleDetails)
     } catch (error) {
       setDetailsError(
-        error instanceof ApiError
-          ? error.message
-          : 'Nao foi possivel carregar os detalhes da venda.',
+        getApiErrorMessage(error, 'Nao foi possivel carregar os detalhes da venda.'),
       )
     } finally {
       setIsDetailsLoading(false)

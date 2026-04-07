@@ -7,7 +7,7 @@ import { ServiceTable } from '@presentation/components/services/ServiceTable'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
-import { ApiError } from '@shared/api/http-client'
+import { getApiErrorMessage } from '@shared/api/http-client'
 import { servicesApi } from '@shared/api/services-api'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
@@ -47,22 +47,24 @@ export function ServicesPage() {
     })
   }, [search, services, statusFilter])
 
-  async function loadServices() {
-    setIsLoading(true)
+  async function loadServices(showLoading = true) {
+    if (showLoading) {
+      setIsLoading(true)
+    }
 
     try {
       const data = await servicesApi.getAll()
       setServices(data)
+      setFeedback(null)
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel carregar os servicos.',
+        message: getApiErrorMessage(error, 'Nao foi possivel carregar os servicos.'),
       })
     } finally {
-      setIsLoading(false)
+      if (showLoading) {
+        setIsLoading(false)
+      }
     }
   }
 
@@ -109,16 +111,13 @@ export function ServicesPage() {
         })
       }
 
-      await loadServices()
+      await loadServices(false)
       setIsPanelOpen(false)
       setSelectedService(null)
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel salvar o servico.',
+        message: getApiErrorMessage(error, 'Nao foi possivel salvar o servico.'),
       })
     } finally {
       setIsSubmitting(false)
@@ -131,7 +130,7 @@ export function ServicesPage() {
 
     try {
       await servicesApi.toggleStatus(service.id)
-      await loadServices()
+      await loadServices(false)
       setFeedback({
         type: 'success',
         message: service.isActive
@@ -141,10 +140,10 @@ export function ServicesPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message:
-          error instanceof ApiError
-            ? error.message
-            : 'Nao foi possivel alterar o status do servico.',
+        message: getApiErrorMessage(
+          error,
+          'Nao foi possivel alterar o status do servico.',
+        ),
       })
     } finally {
       setProcessingServiceId(null)
