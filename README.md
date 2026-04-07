@@ -30,6 +30,26 @@ Este projeto organiza a base de um MVP de vendas com foco em:
 - fluxo de nova venda com produtos, servicos, desconto, forma de pagamento e baixa de estoque
 - historico de vendas com filtros simples e painel lateral de detalhes
 
+## Integracao com API
+
+- a feature `Products` pode usar a API real via `VITE_API_BASE_URL`
+- as demais features continuam usando dados mockados em memoria nesta etapa
+
+Exemplo de configuracao local:
+
+```bash
+cp .env.example .env
+```
+
+No desenvolvimento com Vite, o front pode usar `/api` e deixar o proxy encaminhar para a API real:
+
+```env
+VITE_API_BASE_URL=/api
+VITE_API_PROXY_TARGET=http://localhost:5002
+```
+
+Se precisar chamar a API diretamente fora do proxy, voce ainda pode ajustar `VITE_API_BASE_URL` para a URL completa.
+
 ## Como rodar o projeto
 
 ```bash
@@ -73,7 +93,8 @@ src/
 
 ## Observacoes sobre dados mockados em memoria
 
-- os dados usam repositories em memoria, sem backend real
+- Products pode usar API real quando a base URL estiver configurada
+- servicos e vendas continuam com repositories em memoria nesta etapa
 - produtos, servicos e vendas partem de seeds locais
 - novas vendas afetam o estoque em memoria durante a sessao atual
 - ao recarregar a aplicacao, os dados voltam ao estado inicial dos mocks

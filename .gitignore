@@ -22,3 +22,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+!backend/*.sln
+**/bin/
+**/obj/
+backend/src/Sales.Api/data/*.db

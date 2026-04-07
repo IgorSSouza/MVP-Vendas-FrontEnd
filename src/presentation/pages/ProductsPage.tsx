@@ -1,13 +1,14 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import type { Product } from '@domain/entities'
-import { productRepository } from '@infra/mock/repositories'
 import { ProductFormPanel } from '@presentation/components/products/ProductFormPanel'
 import type { ProductFormValues } from '@presentation/components/products/product-form-schema'
 import { ProductTable } from '@presentation/components/products/ProductTable'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
+import { ApiError } from '@shared/api/http-client'
+import { productsApi } from '@shared/api/products-api'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
 type Feedback = {
@@ -49,12 +50,15 @@ export function ProductsPage() {
     setIsLoading(true)
 
     try {
-      const data = await productRepository.getAll()
+      const data = await productsApi.getAll()
       setProducts(data)
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel carregar os produtos.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel carregar os produtos.',
       })
     } finally {
       setIsLoading(false)
@@ -86,13 +90,13 @@ export function ProductsPage() {
 
     try {
       if (selectedProduct) {
-        await productRepository.update(selectedProduct.id, values)
+        await productsApi.update(selectedProduct.id, values)
         setFeedback({
           type: 'success',
           message: 'Produto atualizado com sucesso.',
         })
       } else {
-        await productRepository.create(values)
+        await productsApi.create(values)
         setFeedback({
           type: 'success',
           message: 'Produto cadastrado com sucesso.',
@@ -102,10 +106,13 @@ export function ProductsPage() {
       await loadProducts()
       setIsPanelOpen(false)
       setSelectedProduct(null)
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel salvar o produto.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel salvar o produto.',
       })
     } finally {
       setIsSubmitting(false)
@@ -117,7 +124,7 @@ export function ProductsPage() {
     setProcessingProductId(product.id)
 
     try {
-      await productRepository.toggleActive(product.id)
+      await productsApi.toggleStatus(product.id)
       await loadProducts()
       setFeedback({
         type: 'success',
@@ -125,10 +132,13 @@ export function ProductsPage() {
           ? 'Produto inativado com sucesso.'
           : 'Produto reativado com sucesso.',
       })
-    } catch {
+    } catch (error) {
       setFeedback({
         type: 'error',
-        message: 'Nao foi possivel alterar o status do produto.',
+        message:
+          error instanceof ApiError
+            ? error.message
+            : 'Nao foi possivel alterar o status do produto.',
       })
     } finally {
       setProcessingProductId(null)

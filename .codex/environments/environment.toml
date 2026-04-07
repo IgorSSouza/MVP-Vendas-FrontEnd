@@ -9,3 +9,13 @@ script = ""
 name = "Executar"
 icon = "run"
 command = "npm run dev"
+
+[[actions]]
+name = "Executar API"
+icon = "tool"
+command = '''
+cd "C:\Users\igor_\Documents\New project API"
+dotnet restore
+dotnet build Sales.sln --no-restore -m:1
+dotnet run --project src/Sales.Api/Sales.Api.csproj
+'''
