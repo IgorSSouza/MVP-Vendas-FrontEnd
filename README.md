@@ -1,16 +1,17 @@
-# MVP de Vendas | Assistencia Tecnica
+# MVP de Vendas | Assistência Técnica
 
-Sistema front-end para operacao de vendas, servicos e acompanhamento gerencial de uma loja de assistencia tecnica e acessorios.
+Sistema front-end para operação de vendas, serviços e acompanhamento gerencial de uma loja de assistência técnica e acessórios.
 
 ## Objetivo do sistema
 
 Este projeto organiza a base de um MVP de vendas com foco em:
 
-- cadastro simples de produtos e servicos
-- criacao de vendas
-- controle basico de estoque para produtos
-- historico de vendas
-- visao inicial de dashboard
+- cadastro simples de produtos e serviços
+- criação de vendas
+- controle básico de estoque para produtos
+- histórico de vendas
+- visão inicial de dashboard
+- autenticação com Google e sessão protegida pela API
 
 ## Stack utilizada
 
@@ -25,31 +26,30 @@ Este projeto organiza a base de um MVP de vendas com foco em:
 ## Funcionalidades atuais do MVP
 
 - dashboard com indicadores principais, resumo por forma de pagamento, estoque baixo e vendas recentes
-- modulo de produtos com listagem, filtros, cadastro, edicao e ativacao ou inativacao
-- modulo de servicos com listagem, filtros, cadastro, edicao e ativacao ou inativacao
-- fluxo de nova venda com produtos, servicos, desconto, forma de pagamento e baixa de estoque pela API
-- historico de vendas com filtros simples e painel lateral de detalhes
+- módulo de produtos com listagem, filtros, cadastro, edição e ativação ou inativação
+- módulo de serviços com listagem, filtros, cadastro, edição e ativação ou inativação
+- fluxo de nova venda com produtos, serviços, desconto, forma de pagamento e baixa de estoque pela API
+- histórico de vendas com filtros simples, paginação, ordenação e painel lateral de detalhes
+- login com Google, armazenamento do token e proteção básica de rotas
+- redirecionamento para configuração inicial da empresa quando `needsCompanySetup = true`
 
-## Integracao com API
+## Integração com API
 
 - `Products`, `Services`, `Sales / New Sale`, `Sales` e `Dashboard` usam a API real
-- a configuracao principal fica em `VITE_API_BASE_URL`
-- no ambiente local com Vite, o recomendado e usar proxy para evitar problemas de CORS
+- o login usa `POST /api/auth/google`
+- o token retornado é salvo no front e enviado como `Authorization: Bearer`
+- a configuração principal fica em `VITE_API_BASE_URL`
+- no ambiente local com Vite, o recomendado é usar proxy para evitar problemas de CORS
 
-Exemplo de configuracao local:
-
-```bash
-cp .env.example .env
-```
-
-No desenvolvimento com Vite, o front pode usar `/api` e deixar o proxy encaminhar para a API real:
+Exemplo de configuração local:
 
 ```env
 VITE_API_BASE_URL=/api
 VITE_API_PROXY_TARGET=http://localhost:5002
+VITE_GOOGLE_CLIENT_ID=seu-google-client-id.apps.googleusercontent.com
 ```
 
-Se precisar chamar a API diretamente fora do proxy, voce tambem pode usar:
+Se precisar chamar a API diretamente fora do proxy:
 
 ```env
 VITE_API_BASE_URL=http://localhost:5002
@@ -57,9 +57,19 @@ VITE_API_BASE_URL=http://localhost:5002
 
 O cliente HTTP trata tanto caminhos com `/api/...` quanto base URL em `/api` ou URL completa.
 
+## Configuração do Google Login
+
+1. Crie um OAuth Client para aplicação web no Google Cloud.
+2. Copie o Client ID para o `.env` usando `VITE_GOOGLE_CLIENT_ID`.
+3. Autorize o domínio local do Vite no Google, por exemplo:
+
+- `http://localhost:5173`
+
+Sem esse valor, a rota `/login` não consegue renderizar o botão do Google Identity Services.
+
 ## Como rodar o projeto
 
-1. Suba a API .NET 8 no endereco configurado em `VITE_API_PROXY_TARGET` ou `VITE_API_BASE_URL`
+1. Suba a API .NET 8 no endereço configurado em `VITE_API_PROXY_TARGET` ou `VITE_API_BASE_URL`
 2. No front-end, crie o arquivo `.env` com base em `.env.example`
 3. Rode:
 
@@ -68,7 +78,7 @@ npm install
 npm run dev
 ```
 
-Para validar a compilacao de producao:
+Para validar a compilação de produção:
 
 ```bash
 npm run build
@@ -80,6 +90,7 @@ npm run build
 src/
   app/
     layout/
+    providers/
     router/
   domain/
     entities/
@@ -97,24 +108,28 @@ src/
     pages/
     styles/
   shared/
+    api/
+    auth/
     constants/
+    theme/
     types/
     utils/
 ```
 
-## Observacoes sobre dados mockados em memoria
+## Observações sobre dados mockados em memória
 
-- a infraestrutura mock continua no projeto para apoio local e evolucao incremental
-- as features principais integradas ja usam a API real
-- se a API estiver indisponivel, as telas integradas exibem erro de conexao em vez de cair silenciosamente
+- a infraestrutura mock continua no projeto para apoio local e evolução incremental
+- as features principais integradas já usam a API real
+- se a API estiver indisponível, as telas integradas exibem erro de conexão em vez de cair silenciosamente
+- as rotas protegidas exigem sessão válida no front
 
-## Backlog pos-MVP
+## Backlog pós-MVP
 
-- autenticacao
-- backend real
-- persistencia de dados
-- ordem de servico
-- relatorios avancados
+- onboarding completo da empresa
+- persistência mais robusta de sessão
+- refresh token
+- ordem de serviço
+- relatórios avançados
 - estorno de venda
-- exportacao de dados
+- exportação de dados
 - melhorias adicionais de UX

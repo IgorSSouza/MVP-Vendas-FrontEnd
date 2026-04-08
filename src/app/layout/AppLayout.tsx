@@ -3,12 +3,14 @@ import { Outlet, useLocation } from 'react-router-dom'
 
 import { AppSidebar } from '@presentation/components/AppSidebar'
 import { AppTopbar } from '@presentation/components/AppTopbar'
+import {
+  applyThemeMode,
+  getStoredThemeMode,
+  type ThemeMode,
+} from '@shared/theme/theme-mode'
 import { getCurrentYear } from '@shared/utils/get-current-year'
 
 const SIDEBAR_STORAGE_KEY = 'app-sidebar-collapsed'
-const THEME_STORAGE_KEY = 'app-theme'
-
-type ThemeMode = 'light' | 'dark'
 
 function getInitialSidebarState() {
   if (typeof window === 'undefined') {
@@ -18,24 +20,10 @@ function getInitialSidebarState() {
   return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'
 }
 
-function getInitialThemeMode(): ThemeMode {
-  if (typeof window === 'undefined') {
-    return 'light'
-  }
-
-  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
-
-  if (savedTheme === 'light' || savedTheme === 'dark') {
-    return savedTheme
-  }
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-}
-
 export function AppLayout() {
   const location = useLocation()
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(getInitialSidebarState)
-  const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialThemeMode)
+  const [themeMode, setThemeMode] = useState<ThemeMode>(getStoredThemeMode)
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -50,8 +38,8 @@ export function AppLayout() {
       return
     }
 
-    window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
-    document.documentElement.classList.toggle('dark', themeMode === 'dark')
+    window.localStorage.setItem('app-theme', themeMode)
+    applyThemeMode(themeMode)
   }, [themeMode])
 
   return (

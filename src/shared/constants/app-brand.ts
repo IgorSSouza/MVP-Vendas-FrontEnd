@@ -1,6 +1,6 @@
 export const appBrand = {
-  systemName: 'NexaHub',
-  shortName: 'NH',
+  systemName: 'Sistema de Gestão de Vendas',
+  shortName: 'IS',
   clientName: 'Loja parceira',
-  categoryLabel: 'Plataforma comercial',
+  categoryLabel: 'Gestão comercial',
 } as const

@@ -95,11 +95,11 @@ function PlusCircleIcon({ className = '' }: SidebarIconProps) {
 }
 
 const navigationIcons = {
-  Dashboard: DashboardIcon,
-  Produtos: BoxIcon,
-  Serviços: WrenchIcon,
-  Vendas: ReceiptIcon,
-  'Nova venda': PlusCircleIcon,
+  [appRoutes.dashboard]: DashboardIcon,
+  [appRoutes.products]: BoxIcon,
+  [appRoutes.services]: WrenchIcon,
+  [appRoutes.sales]: ReceiptIcon,
+  [appRoutes.newSale]: PlusCircleIcon,
 } as const
 
 export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
@@ -142,7 +142,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
                 <p className="truncate text-xs font-semibold uppercase tracking-[0.28em] text-cyan-300/90">
                   {appBrand.clientName}
                 </p>
-                <h1 className="mt-2 truncate text-lg font-semibold tracking-tight text-white">
+                <h1 className="mt-2 text-sm font-semibold leading-5 tracking-tight text-white xl:text-base">
                   {appBrand.systemName}
                 </h1>
               </div>
@@ -159,12 +159,11 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
             </button>
           </div>
         )}
-
       </div>
 
       <nav className="flex-1 space-y-2.5 px-3 py-5">
         {navigationItems.map((item) => {
-          const Icon = navigationIcons[item.label]
+          const Icon = navigationIcons[item.to]
 
           return (
             <NavLink
@@ -233,7 +232,9 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
               isCollapsed ? 'mx-auto w-10 truncate' : 'block',
             ].join(' ')}
           >
-            {isCollapsed ? 'API' : 'Sistema integrado com a API para operação e acompanhamento.'}
+            {isCollapsed
+              ? 'API'
+              : 'Sistema integrado com a API para operação e acompanhamento.'}
           </p>
         </div>
       </div>

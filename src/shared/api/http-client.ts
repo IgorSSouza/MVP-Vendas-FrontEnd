@@ -1,4 +1,6 @@
 import { API_BASE_URL } from '@shared/api/config'
+import { dispatchUnauthorizedAuthEvent } from '@shared/auth/auth-events'
+import { getStoredAccessToken } from '@shared/auth/session'
 
 export class ApiError extends Error {
   status: number
@@ -64,6 +66,33 @@ function buildApiUrl(path: string) {
   return `${normalizedBaseUrl}${normalizedPath}`
 }
 
+function buildRequestHeaders(init?: RequestInit) {
+  const headers = new Headers(init?.headers)
+  const accessToken = getStoredAccessToken()
+
+  if (accessToken && !headers.has('Authorization')) {
+    headers.set('Authorization', `Bearer ${accessToken}`)
+  }
+
+  if (!headers.has('Content-Type') && init?.body && !(init.body instanceof FormData)) {
+    headers.set('Content-Type', 'application/json')
+  }
+
+  return headers
+}
+
+function getDefaultStatusMessage(status: number) {
+  if (status === 401) {
+    return 'Sua sessão não é mais válida. Faça login novamente para continuar.'
+  }
+
+  if (status === 403) {
+    return 'Você não tem permissão para acessar este recurso com a sessão atual.'
+  }
+
+  return 'Não foi possível concluir a requisição.'
+}
+
 export function getApiErrorMessage(error: unknown, fallbackMessage: string) {
   if (error instanceof ApiError) {
     return error.message
@@ -77,11 +106,8 @@ export async function httpRequest<T>(path: string, init?: RequestInit) {
 
   try {
     response = await fetch(buildApiUrl(path), {
-      headers: {
-        'Content-Type': 'application/json',
-        ...init?.headers,
-      },
       ...init,
+      headers: buildRequestHeaders(init),
     })
   } catch {
     throw new ApiError(
@@ -102,8 +128,12 @@ export async function httpRequest<T>(path: string, init?: RequestInit) {
   }
 
   if (!response.ok) {
+    if (response.status === 401 && getStoredAccessToken()) {
+      dispatchUnauthorizedAuthEvent()
+    }
+
     throw new ApiError(
-      extractErrorMessage(payload) ?? 'Não foi possível concluir a requisição.',
+      extractErrorMessage(payload) ?? getDefaultStatusMessage(response.status),
       response.status,
     )
   }

@@ -1,4 +1,6 @@
 export const appRoutes = {
+  login: '/login',
+  setupCompany: '/setup-company',
   dashboard: '/dashboard',
   products: '/products',
   services: '/services',

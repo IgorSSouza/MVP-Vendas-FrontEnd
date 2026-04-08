@@ -2,11 +2,17 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 
+import { AuthProvider } from '@app/providers/AuthProvider'
 import { router } from '@app/router'
 import '@presentation/styles/global.css'
+import { applyThemeMode, getStoredThemeMode } from '@shared/theme/theme-mode'
+
+applyThemeMode(getStoredThemeMode())
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   </StrictMode>,
 )
