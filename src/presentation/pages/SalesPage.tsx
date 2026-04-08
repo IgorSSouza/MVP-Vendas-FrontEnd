@@ -4,6 +4,7 @@ import type { Sale } from '@domain/entities'
 import { PaymentMethod } from '@domain/enums'
 import { SaleDetailsPanel } from '@presentation/components/sales/SaleDetailsPanel'
 import { SalesTable } from '@presentation/components/sales/SalesTable'
+import { AppSelect } from '@presentation/components/shared/AppSelect'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
@@ -13,6 +14,14 @@ import { salesApi, type SaleListItem } from '@shared/api/sales-api'
 type PaymentMethodFilter = 'all' | PaymentMethod
 
 export function SalesPage() {
+  const paymentOptions = [
+    { value: 'all' as const, label: 'Todos' },
+    { value: PaymentMethod.PIX, label: 'Pix' },
+    { value: PaymentMethod.CASH, label: 'Dinheiro' },
+    { value: PaymentMethod.DEBIT_CARD, label: 'Cartão de débito' },
+    { value: PaymentMethod.CREDIT_CARD, label: 'Cartão de crédito' },
+  ]
+
   const [sales, setSales] = useState<SaleListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -34,8 +43,7 @@ export function SalesPage() {
       const normalizedSearch = search.toLowerCase()
       const matchesSearch = !normalizedSearch || sale.id.toLowerCase().includes(normalizedSearch)
 
-      const matchesPayment =
-        paymentFilter === 'all' || sale.paymentMethod === paymentFilter
+      const matchesPayment = paymentFilter === 'all' || sale.paymentMethod === paymentFilter
 
       const saleDate = new Date(sale.createdAt)
       const matchesStartDate = !startDate || saleDate >= new Date(`${startDate}T00:00:00`)
@@ -115,17 +123,11 @@ export function SalesPage() {
 
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Pagamento</span>
-            <select
+            <AppSelect
               value={paymentFilter}
-              onChange={(event) => setPaymentFilter(event.target.value as PaymentMethodFilter)}
-              className="app-select"
-            >
-              <option value="all">Todos</option>
-              <option value={PaymentMethod.PIX}>Pix</option>
-              <option value={PaymentMethod.CASH}>Dinheiro</option>
-              <option value={PaymentMethod.DEBIT_CARD}>Cartão de débito</option>
-              <option value={PaymentMethod.CREDIT_CARD}>Cartão de crédito</option>
-            </select>
+              onChange={setPaymentFilter}
+              options={paymentOptions}
+            />
           </label>
 
           <label className="grid gap-2">

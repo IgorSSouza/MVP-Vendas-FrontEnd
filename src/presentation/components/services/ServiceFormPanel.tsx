@@ -1,8 +1,12 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { Controller, useForm } from 'react-hook-form'
 
 import type { Service } from '@domain/entities'
-import { serviceFormSchema, type ServiceFormValues } from '@presentation/components/services/service-form-schema'
+import {
+  serviceFormSchema,
+  type ServiceFormValues,
+} from '@presentation/components/services/service-form-schema'
+import { formatCurrency } from '@presentation/components/services/service-utils'
 import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { CurrencyInput } from '@presentation/components/shared/CurrencyInput'
 import { InlineSpinner } from '@presentation/components/shared/InlineSpinner'
@@ -36,10 +40,22 @@ export function ServiceFormPanel({
     handleSubmit,
     reset,
     setError,
+    watch,
     formState: { errors },
   } = useForm<ServiceFormValues>({
     defaultValues,
   })
+
+  const costPrice = watch('costPrice')
+  const salePrice = watch('salePrice')
+  const description = watch('description')
+
+  const margin = useMemo(() => {
+    const currentSalePrice = Number.isFinite(salePrice) ? salePrice : 0
+    const currentCostPrice = Number.isFinite(costPrice) ? costPrice : 0
+
+    return currentSalePrice - currentCostPrice
+  }, [costPrice, salePrice])
 
   useEffect(() => {
     if (!isOpen) {
@@ -97,7 +113,7 @@ export function ServiceFormPanel({
 
       <aside
         className={[
-          'app-drawer max-w-md border-l border-slate-200/80 dark:border-slate-800/80',
+          'app-drawer max-w-xl border-l border-slate-200/80 dark:border-slate-800/80',
           isOpen ? 'translate-x-0' : 'translate-x-full',
         ].join(' ')}
       >
@@ -110,8 +126,8 @@ export function ServiceFormPanel({
               <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
                 {service ? 'Editar serviço' : 'Novo serviço'}
               </h2>
-              <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
-                Preencha os dados principais para manter os serviços organizados.
+              <p className="mt-2 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-400">
+                Organize a oferta da assistência com nome, descrição, valores e status prontos para o dia a dia da operação.
               </p>
             </div>
 
@@ -129,75 +145,138 @@ export function ServiceFormPanel({
           onSubmit={handleSubmit(handleValidSubmit)}
           className="flex flex-1 flex-col overflow-y-auto"
         >
-          <div className="grid gap-5 px-4 py-6 sm:px-6">
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Nome</span>
-              <input
-                {...register('name')}
-                className="app-input"
-                placeholder="Ex.: Troca de bateria"
-              />
-              {errors.name ? <span className="text-sm text-rose-600">{errors.name.message}</span> : null}
-            </label>
+          <div className="grid gap-6 px-4 py-6 sm:px-6">
+            <section className="app-surface-muted p-4">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+                Visão rápida
+              </p>
+              <div className="mt-4 grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200/80 bg-white px-4 py-3 dark:border-slate-800/80 dark:bg-slate-950/70">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Custo
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {formatCurrency(costPrice || 0)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-white px-4 py-3 dark:border-slate-800/80 dark:bg-slate-950/70">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Venda
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {formatCurrency(salePrice || 0)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-white px-4 py-3 dark:border-slate-800/80 dark:bg-slate-950/70">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Margem bruta
+                  </p>
+                  <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                    {formatCurrency(margin)}
+                  </p>
+                </div>
+              </div>
+            </section>
 
-            <label className="grid gap-2">
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Descrição</span>
-              <textarea
-                {...register('description')}
-                rows={4}
-                className="app-textarea"
-                placeholder="Detalhes breves sobre o serviço"
-              />
-            </label>
+            <section className="grid gap-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+                  Dados do serviço
+                </p>
+                <h3 className="mt-2 text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                  Informações principais do cadastro
+                </h3>
+              </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Custo</span>
-                <Controller
-                  control={control}
-                  name="costPrice"
-                  render={({ field }) => (
-                    <CurrencyInput
-                      name={field.name}
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                    />
-                  )}
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Nome</span>
+                <input
+                  {...register('name')}
+                  className="app-input"
+                  placeholder="Ex.: Troca de bateria"
                 />
-                {errors.costPrice ? (
-                  <span className="text-sm text-rose-600">{errors.costPrice.message}</span>
+                {errors.name ? (
+                  <span className="text-sm text-rose-600">{errors.name.message}</span>
                 ) : null}
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Preço de venda</span>
-                <Controller
-                  control={control}
-                  name="salePrice"
-                  render={({ field }) => (
-                    <CurrencyInput
-                      name={field.name}
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                    />
-                  )}
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Descrição</span>
+                <textarea
+                  {...register('description')}
+                  rows={4}
+                  className="app-textarea"
+                  placeholder="Explique brevemente o que está incluído neste serviço"
                 />
-                {errors.salePrice ? (
-                  <span className="text-sm text-rose-600">{errors.salePrice.message}</span>
-                ) : null}
+                <span className="text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  {description?.trim()
+                    ? `${description.trim().length} caracteres preenchidos.`
+                    : 'Uma boa descrição ajuda na consulta e na venda do serviço.'}
+                </span>
               </label>
-            </div>
 
-            <label className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
-              <input
-                {...register('isActive')}
-                type="checkbox"
-                className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-200"
-              />
-              <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Serviço ativo</span>
-            </label>
+              <div className="grid gap-5 sm:grid-cols-2">
+                <label className="grid gap-2">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Custo</span>
+                  <Controller
+                    control={control}
+                    name="costPrice"
+                    render={({ field }) => (
+                      <CurrencyInput
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
+                  {errors.costPrice ? (
+                    <span className="text-sm text-rose-600">{errors.costPrice.message}</span>
+                  ) : null}
+                </label>
+
+                <label className="grid gap-2">
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Preço de venda</span>
+                  <Controller
+                    control={control}
+                    name="salePrice"
+                    render={({ field }) => (
+                      <CurrencyInput
+                        name={field.name}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                      />
+                    )}
+                  />
+                  {errors.salePrice ? (
+                    <span className="text-sm text-rose-600">{errors.salePrice.message}</span>
+                  ) : null}
+                </label>
+              </div>
+            </section>
+
+            <section className="grid gap-5">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
+                  Operação
+                </p>
+                <h3 className="mt-2 text-lg font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                  Disponibilidade do serviço
+                </h3>
+              </div>
+
+              <label className="flex items-center gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/70 px-4 py-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+                <input
+                  {...register('isActive')}
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-slate-300 text-cyan-700 focus:ring-cyan-200"
+                />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Serviço ativo para venda e consulta
+                </span>
+              </label>
+            </section>
           </div>
 
           <div className="mt-auto border-t border-slate-200/80 px-4 py-5 dark:border-slate-800/80 sm:px-6">

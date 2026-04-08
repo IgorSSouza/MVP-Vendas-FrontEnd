@@ -48,21 +48,21 @@ export function AppTopbar({ themeMode, onToggleTheme }: AppTopbarProps) {
   const currentSection = resolveCurrentSection(pathname)
 
   return (
-    <header className="border-b border-slate-200/80 bg-white/95 px-4 py-4 backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-950/95 sm:px-6 lg:px-8">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
+    <header className="border-b border-slate-200/80 bg-white/95 px-3 py-3 backdrop-blur-sm dark:border-slate-800/80 dark:bg-slate-950/95 sm:px-5 sm:py-4 lg:px-6 xl:px-8">
+      <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        <div className="min-w-0">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
             Painel operacional
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+          <h2 className="mt-2 truncate text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50 sm:text-2xl">
             {currentSection.label}
           </h2>
-          <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+          <p className="mt-1 max-w-2xl text-sm leading-6 text-slate-600 dark:text-slate-400">
             {currentSection.description}
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-[auto_1fr_1fr] gap-2 sm:flex sm:flex-wrap sm:items-center sm:justify-end sm:gap-3">
           <button
             type="button"
             onClick={onToggleTheme}
@@ -73,17 +73,23 @@ export function AppTopbar({ themeMode, onToggleTheme }: AppTopbarProps) {
             {themeMode === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
 
-          <Link to={appRoutes.sales} className="app-button-secondary rounded-xl px-4 py-2">
+          <Link
+            to={appRoutes.sales}
+            className="app-button-secondary min-w-0 rounded-xl px-4 py-2 text-center"
+          >
             Ver vendas
           </Link>
 
-          <Link to={appRoutes.newSale} className="app-button-primary rounded-xl px-4 py-2">
+          <Link
+            to={appRoutes.newSale}
+            className="app-button-primary min-w-0 rounded-xl px-4 py-2 text-center"
+          >
             Nova venda
           </Link>
         </div>
       </div>
 
-      <nav className="mt-4 flex flex-wrap gap-2 lg:hidden">
+      <nav className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-1 lg:hidden">
         {navigationItems.map((item) => (
           <NavLink
             key={item.to}
@@ -91,7 +97,7 @@ export function AppTopbar({ themeMode, onToggleTheme }: AppTopbarProps) {
             end={item.to === appRoutes.sales || item.to === appRoutes.newSale}
             className={({ isActive }) =>
               [
-                'rounded-full border px-3 py-2 text-sm font-medium transition shadow-sm',
+                'shrink-0 rounded-full border px-3 py-2 text-sm font-medium transition shadow-sm',
                 isActive
                   ? 'border-slate-900 bg-slate-900 text-white dark:border-cyan-500 dark:bg-cyan-500 dark:text-slate-950'
                   : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800',

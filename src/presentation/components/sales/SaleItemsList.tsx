@@ -10,19 +10,21 @@ type SaleItemsListProps = {
   items: DraftSaleItem[]
   onQuantityChange: (itemId: string, quantity: number) => void
   onRemove: (itemId: string) => void
+  lastAddedLabel?: string | null
 }
 
 export function SaleItemsList({
   items,
   onQuantityChange,
   onRemove,
+  lastAddedLabel = null,
 }: SaleItemsListProps) {
   if (!items.length) {
     return (
       <div className="app-empty-state">
         <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">Nenhum item na venda</h3>
         <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
-          Adicione produtos ou serviços para montar a venda.
+          Adicione produtos ou serviços para montar a venda e revisar o resumo em tempo real.
         </p>
       </div>
     )
@@ -31,10 +33,25 @@ export function SaleItemsList({
   return (
     <div className="app-surface overflow-hidden">
       <div className="app-panel-header">
-        <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">Itens da venda</h2>
-        <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          Ajuste as quantidades antes de finalizar.
-        </p>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="text-lg font-semibold text-slate-950 dark:text-slate-50">Itens da venda</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
+              Ajuste quantidades, valide estoque e deixe a venda pronta para finalizar.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <div className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+              {items.length} item(ns)
+            </div>
+            {lastAddedLabel ? (
+              <div className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+                Último adicionado: {lastAddedLabel}
+              </div>
+            ) : null}
+          </div>
+        </div>
       </div>
 
       <div className="divide-y divide-slate-200 dark:divide-slate-800">
@@ -43,7 +60,7 @@ export function SaleItemsList({
             key={`${item.itemType}-${item.itemId}`}
             className="px-4 py-5 transition-colors duration-200 hover:bg-slate-50/60 dark:hover:bg-slate-800/40 sm:px-6"
           >
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="flex flex-col gap-4 xl:grid xl:grid-cols-[minmax(0,1fr)_auto] xl:items-center">
               <div>
                 <div className="flex flex-wrap items-center gap-2">
                   <h3 className="font-semibold text-slate-900 dark:text-slate-100">{item.name}</h3>
@@ -51,12 +68,21 @@ export function SaleItemsList({
                     {getItemTypeLabel(item.itemType)}
                   </span>
                 </div>
-                <div className="mt-2 flex flex-wrap gap-3 text-sm text-slate-500 dark:text-slate-400">
-                  <span>Unitário: {formatCurrency(item.unitSalePrice)}</span>
-                  <span>Subtotal: {formatCurrency(item.subtotal)}</span>
-                  <span>Lucro: {formatCurrency(item.profit)}</span>
+
+                <div className="mt-3 flex flex-wrap gap-2 text-xs">
+                  <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Unitário: {formatCurrency(item.unitSalePrice)}
+                  </span>
+                  <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    Subtotal: {formatCurrency(item.subtotal)}
+                  </span>
+                  <span className="app-badge border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-500/10 dark:text-emerald-200">
+                    Lucro: {formatCurrency(item.profit)}
+                  </span>
                   {typeof item.availableStock === 'number' ? (
-                    <span>Estoque disponível: {item.availableStock}</span>
+                    <span className="app-badge border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                      Estoque disponível: {item.availableStock}
+                    </span>
                   ) : null}
                 </div>
               </div>

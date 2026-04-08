@@ -12,6 +12,7 @@ import { PaymentMethod, SaleItemType } from '@domain/enums'
 import { SaleCatalogSection } from '@presentation/components/sales/SaleCatalogSection'
 import { SaleItemsList } from '@presentation/components/sales/SaleItemsList'
 import { SaleSummaryCard } from '@presentation/components/sales/SaleSummaryCard'
+import { formatCurrency } from '@presentation/components/sales/sale-utils'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
@@ -29,6 +30,21 @@ type Feedback = {
   message: string
 }
 
+function getPaymentMethodName(paymentMethod: PaymentMethod) {
+  switch (paymentMethod) {
+    case PaymentMethod.PIX:
+      return 'Pix'
+    case PaymentMethod.CASH:
+      return 'Dinheiro'
+    case PaymentMethod.DEBIT_CARD:
+      return 'Cartão de débito'
+    case PaymentMethod.CREDIT_CARD:
+      return 'Cartão de crédito'
+    default:
+      return paymentMethod
+  }
+}
+
 export function NewSalePage() {
   const [products, setProducts] = useState<Product[]>([])
   const [services, setServices] = useState<Service[]>([])
@@ -38,19 +54,59 @@ export function NewSalePage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
+  const [lastAddedLabel, setLastAddedLabel] = useState<string | null>(null)
+  const [productSearch, setProductSearch] = useState('')
+  const [serviceSearch, setServiceSearch] = useState('')
 
   useEffect(() => {
     void loadData()
   }, [])
 
+  useEffect(() => {
+    if (!lastAddedLabel) {
+      return
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setLastAddedLabel(null)
+    }, 1800)
+
+    return () => window.clearTimeout(timeoutId)
+  }, [lastAddedLabel])
+
   const activeProducts = useMemo(
     () => products.filter((product) => product.isActive),
     [products],
   )
+
   const activeServices = useMemo(
     () => services.filter((service) => service.isActive),
     [services],
   )
+
+  const filteredProducts = useMemo(() => {
+    const normalizedSearch = productSearch.trim().toLowerCase()
+
+    if (!normalizedSearch) {
+      return activeProducts
+    }
+
+    return activeProducts.filter((product) =>
+      product.name.toLowerCase().includes(normalizedSearch),
+    )
+  }, [activeProducts, productSearch])
+
+  const filteredServices = useMemo(() => {
+    const normalizedSearch = serviceSearch.trim().toLowerCase()
+
+    if (!normalizedSearch) {
+      return activeServices
+    }
+
+    return activeServices.filter((service) =>
+      service.name.toLowerCase().includes(normalizedSearch),
+    )
+  }, [activeServices, serviceSearch])
 
   const summary = useMemo(() => {
     const subtotal = calculateSaleSubtotal(items)
@@ -83,10 +139,7 @@ export function NewSalePage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(
-          error,
-          'Não foi possível carregar os dados para a venda.',
-        ),
+        message: getApiErrorMessage(error, 'Não foi possível carregar os dados para a venda.'),
       })
     } finally {
       if (showLoading) {
@@ -125,6 +178,8 @@ export function NewSalePage() {
       })
       return
     }
+
+    setLastAddedLabel(product.name)
 
     setItems((currentItems) => {
       const existingItem = currentItems.find((item) => item.itemId === product.id)
@@ -166,6 +221,7 @@ export function NewSalePage() {
 
   function addService(service: Service) {
     setFeedback(null)
+    setLastAddedLabel(service.name)
 
     setItems((currentItems) => {
       const existingItem = currentItems.find((item) => item.itemId === service.id)
@@ -280,6 +336,7 @@ export function NewSalePage() {
       setItems([])
       setDiscount(0)
       setPaymentMethod(PaymentMethod.PIX)
+      setLastAddedLabel(null)
       setFeedback({
         type: 'success',
         message: 'Venda finalizada com sucesso.',
@@ -300,7 +357,7 @@ export function NewSalePage() {
         <PageHeader
           eyebrow="Nova venda"
           title="Montar venda"
-          description="Adicione produtos e serviços, ajuste os itens da venda e finalize a operação com cálculo imediato de subtotal, total e lucro."
+          description="Selecione itens, configure a venda e finalize com clareza, mantendo o fluxo rápido mesmo com muitos produtos e serviços."
         />
       </div>
 
@@ -311,18 +368,69 @@ export function NewSalePage() {
         ) : null}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1.3fr_0.9fr]">
+      <div className="grid gap-6 2xl:grid-cols-[minmax(0,1.45fr)_420px]">
         <div className="space-y-6 app-enter-soft-delay-2">
-          <div className="grid gap-6 lg:grid-cols-2">
+          <section className="app-surface p-5">
+            <div className="flex flex-col gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700/80 dark:text-cyan-300/80">
+                  1. Escolha os itens
+                </p>
+                <h2 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">
+                  Busque produtos e serviços com mais agilidade
+                </h2>
+                <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                  Use as buscas abaixo para localizar rapidamente o que deseja vender e adicionar à operação.
+                </p>
+              </div>
+
+              <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/60">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">
+                    Itens na venda
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-950 dark:text-slate-50">
+                    {items.length}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/60">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">
+                    Pagamento atual
+                  </p>
+                  <p className="mt-3 text-base font-semibold text-slate-950 dark:text-slate-50">
+                    {getPaymentMethodName(paymentMethod)}
+                  </p>
+                </div>
+                <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-4 dark:border-slate-800 dark:bg-slate-950/60">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400 dark:text-slate-500">
+                    Total parcial
+                  </p>
+                  <p className="mt-3 text-2xl font-semibold text-slate-950 dark:text-slate-50">
+                    {formatCurrency(summary.total)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div className="grid gap-6 xl:grid-cols-2">
             <SaleCatalogSection
               title="Produtos ativos"
-              description="Escolha produtos disponíveis em estoque para adicionar na venda."
-              items={activeProducts.map((product) => ({
+              description="Busque e selecione produtos disponíveis em estoque para compor a venda."
+              searchValue={productSearch}
+              searchPlaceholder="Buscar produto pelo nome"
+              onSearchChange={setProductSearch}
+              items={filteredProducts.map((product) => ({
                 ...product,
                 type: SaleItemType.PRODUCT,
               }))}
+              totalItems={activeProducts.length}
               emptyMessage={
-                isLoading ? 'Carregando produtos...' : 'Nenhum produto ativo disponível.'
+                productSearch
+                  ? 'Nenhum produto encontrado para esta busca.'
+                  : isLoading
+                    ? 'Carregando produtos...'
+                    : 'Nenhum produto ativo disponível.'
               }
               isDisabled={isLoading || isSubmitting}
               onAdd={(item) => addProduct(item as Product)}
@@ -330,24 +438,44 @@ export function NewSalePage() {
 
             <SaleCatalogSection
               title="Serviços ativos"
-              description="Adicione serviços ativos da assistência técnica ao pedido."
-              items={activeServices.map((service) => ({
+              description="Busque e selecione serviços da assistência técnica para o pedido."
+              searchValue={serviceSearch}
+              searchPlaceholder="Buscar serviço pelo nome"
+              onSearchChange={setServiceSearch}
+              items={filteredServices.map((service) => ({
                 ...service,
                 type: SaleItemType.SERVICE,
               }))}
+              totalItems={activeServices.length}
               emptyMessage={
-                isLoading ? 'Carregando serviços...' : 'Nenhum serviço ativo disponível.'
+                serviceSearch
+                  ? 'Nenhum serviço encontrado para esta busca.'
+                  : isLoading
+                    ? 'Carregando serviços...'
+                    : 'Nenhum serviço ativo disponível.'
               }
               isDisabled={isLoading || isSubmitting}
               onAdd={(item) => addService(item as Service)}
             />
           </div>
 
-          <SaleItemsList
-            items={items}
-            onQuantityChange={handleQuantityChange}
-            onRemove={handleRemoveItem}
-          />
+          <section className="space-y-4">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-700/80 dark:text-cyan-300/80">
+                2. Revise os itens
+              </p>
+              <h2 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">
+                Ajuste quantidades e valide a composição da venda
+              </h2>
+            </div>
+
+            <SaleItemsList
+              items={items}
+              onQuantityChange={handleQuantityChange}
+              onRemove={handleRemoveItem}
+              lastAddedLabel={lastAddedLabel}
+            />
+          </section>
         </div>
 
         <div className="app-enter-soft-delay-3">

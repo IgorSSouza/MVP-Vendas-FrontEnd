@@ -106,7 +106,7 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
   return (
     <aside
       className={[
-        'hidden shrink-0 border-r border-slate-900/80 bg-slate-950 text-slate-100 transition-[width] duration-200 ease-out lg:flex lg:flex-col',
+        'hidden shrink-0 border-r border-slate-900/80 bg-slate-950 text-slate-100 transition-[width] duration-200 ease-out xl:flex xl:flex-col',
         isCollapsed ? 'w-24' : 'w-72',
       ].join(' ')}
     >
