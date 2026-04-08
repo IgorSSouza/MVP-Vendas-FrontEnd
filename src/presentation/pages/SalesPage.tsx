@@ -12,6 +12,9 @@ import { getApiErrorMessage } from '@shared/api/http-client'
 import { salesApi, type SaleListItem } from '@shared/api/sales-api'
 
 type PaymentMethodFilter = 'all' | PaymentMethod
+type SortOption = 'created-desc' | 'created-asc' | 'total-desc' | 'total-asc'
+
+const pageSizeOptions = [8, 12, 20]
 
 export function SalesPage() {
   const paymentOptions = [
@@ -26,6 +29,9 @@ export function SalesPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethodFilter>('all')
+  const [sortOption, setSortOption] = useState<SortOption>('created-desc')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [pageSize, setPageSize] = useState(pageSizeOptions[0])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
   const [feedback, setFeedback] = useState<{ type: 'error'; message: string } | null>(null)
@@ -39,8 +45,8 @@ export function SalesPage() {
   }, [])
 
   const filteredSales = useMemo(() => {
-    return sales.filter((sale) => {
-      const normalizedSearch = search.toLowerCase()
+    const visibleSales = sales.filter((sale) => {
+      const normalizedSearch = search.trim().toLowerCase()
       const matchesSearch = !normalizedSearch || sale.id.toLowerCase().includes(normalizedSearch)
 
       const matchesPayment = paymentFilter === 'all' || sale.paymentMethod === paymentFilter
@@ -51,7 +57,42 @@ export function SalesPage() {
 
       return matchesSearch && matchesPayment && matchesStartDate && matchesEndDate
     })
-  }, [endDate, paymentFilter, sales, search, startDate])
+
+    return [...visibleSales].sort((left, right) => {
+      switch (sortOption) {
+        case 'created-asc':
+          return new Date(left.createdAt).getTime() - new Date(right.createdAt).getTime()
+        case 'total-desc':
+          return right.total - left.total
+        case 'total-asc':
+          return left.total - right.total
+        case 'created-desc':
+        default:
+          return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
+      }
+    })
+  }, [endDate, paymentFilter, sales, search, sortOption, startDate])
+
+  const totalFilteredSales = filteredSales.length
+  const totalPages = Math.max(1, Math.ceil(totalFilteredSales / pageSize))
+
+  const paginatedSales = useMemo(() => {
+    const start = (currentPage - 1) * pageSize
+    return filteredSales.slice(start, start + pageSize)
+  }, [currentPage, filteredSales, pageSize])
+
+  const pageStart = totalFilteredSales === 0 ? 0 : (currentPage - 1) * pageSize + 1
+  const pageEnd = totalFilteredSales === 0 ? 0 : pageStart + paginatedSales.length - 1
+
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [search, paymentFilter, sortOption, pageSize, startDate, endDate])
+
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages)
+    }
+  }, [currentPage, totalPages])
 
   async function loadSales() {
     setIsLoading(true)
@@ -101,7 +142,7 @@ export function SalesPage() {
         <PageHeader
           eyebrow="Vendas"
           title="Histórico de vendas"
-          description="Consulte as vendas realizadas, aplique filtros rápidos e visualize os detalhes de cada operação."
+          description="Consulte as vendas realizadas, aplique filtros rápidos e acompanhe a operação com leitura mais clara em qualquer largura de tela."
         />
       </div>
 
@@ -109,8 +150,29 @@ export function SalesPage() {
         {feedback ? <FeedbackBanner type={feedback.type} message={feedback.message} /> : null}
       </div>
 
-      <div className="app-surface p-6 app-enter-soft-delay-1">
-        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
+      <div className="app-surface p-5 sm:p-6 app-enter-soft-delay-1">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div className="min-w-0 flex-1">
+            <p className="text-xs font-semibold uppercase tracking-[0.24em] text-cyan-800/80 dark:text-cyan-300/80">
+              Filtros e busca
+            </p>
+            <h2 className="mt-2 text-xl font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+              Localize, ordene e acompanhe as vendas com mais clareza
+            </h2>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-400">
+              Busque pelo identificador, filtre por pagamento e período e acompanhe o histórico com uma listagem mais estável em tela dividida ou em dispositivos menores.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/70 dark:text-slate-300">
+            <span className="font-semibold text-slate-950 dark:text-slate-50">
+              {totalFilteredSales}
+            </span>{' '}
+            {totalFilteredSales === 1 ? 'resultado visível' : 'resultados visíveis'}
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Buscar</span>
             <input
@@ -159,7 +221,23 @@ export function SalesPage() {
       </div>
 
       <div className="app-enter-soft-delay-2">
-        <SalesTable sales={filteredSales} isLoading={isLoading} onOpenDetails={openDetails} />
+        <SalesTable
+          sales={paginatedSales}
+          isLoading={isLoading}
+          sortOption={sortOption}
+          pageSize={pageSize}
+          totalItems={totalFilteredSales}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          pageStart={pageStart}
+          pageEnd={pageEnd}
+          pageSizeOptions={pageSizeOptions}
+          onOpenDetails={openDetails}
+          onSortChange={setSortOption}
+          onPageSizeChange={setPageSize}
+          onPreviousPage={() => setCurrentPage((page) => Math.max(1, page - 1))}
+          onNextPage={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+        />
       </div>
 
       <SaleDetailsPanel

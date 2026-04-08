@@ -10,30 +10,46 @@ const THEME_STORAGE_KEY = 'app-theme'
 
 type ThemeMode = 'light' | 'dark'
 
+function getInitialSidebarState() {
+  if (typeof window === 'undefined') {
+    return false
+  }
+
+  return window.localStorage.getItem(SIDEBAR_STORAGE_KEY) === 'true'
+}
+
+function getInitialThemeMode(): ThemeMode {
+  if (typeof window === 'undefined') {
+    return 'light'
+  }
+
+  const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
+
+  if (savedTheme === 'light' || savedTheme === 'dark') {
+    return savedTheme
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
 export function AppLayout() {
   const location = useLocation()
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
-  const [themeMode, setThemeMode] = useState<ThemeMode>('light')
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(getInitialSidebarState)
+  const [themeMode, setThemeMode] = useState<ThemeMode>(getInitialThemeMode)
 
   useEffect(() => {
-    const savedValue = window.localStorage.getItem(SIDEBAR_STORAGE_KEY)
-    setIsSidebarCollapsed(savedValue === 'true')
-
-    const savedTheme = window.localStorage.getItem(THEME_STORAGE_KEY)
-
-    if (savedTheme === 'light' || savedTheme === 'dark') {
-      setThemeMode(savedTheme)
+    if (typeof window === 'undefined') {
       return
     }
 
-    setThemeMode(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
-  }, [])
-
-  useEffect(() => {
     window.localStorage.setItem(SIDEBAR_STORAGE_KEY, String(isSidebarCollapsed))
   }, [isSidebarCollapsed])
 
   useEffect(() => {
+    if (typeof window === 'undefined') {
+      return
+    }
+
     window.localStorage.setItem(THEME_STORAGE_KEY, themeMode)
     document.documentElement.classList.toggle('dark', themeMode === 'dark')
   }, [themeMode])
