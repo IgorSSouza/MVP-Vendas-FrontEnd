@@ -1,11 +1,14 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 
+import { useAuth } from '@app/providers/AuthProvider'
 import { appBrand } from '@shared/constants/app-brand'
 import { appRoutes, navigationItems } from '@shared/constants/app-routes'
 
 type AppSidebarProps = {
   isCollapsed: boolean
   onToggle: () => void
+  themeMode: 'light' | 'dark'
+  onToggleTheme: () => void
 }
 
 type SidebarIconProps = {
@@ -94,6 +97,48 @@ function PlusCircleIcon({ className = '' }: SidebarIconProps) {
   )
 }
 
+function SunIcon({ className = '' }: SidebarIconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M10 3V5.25M10 14.75V17M5.05 5.05L6.65 6.65M13.35 13.35L14.95 14.95M3 10H5.25M14.75 10H17M5.05 14.95L6.65 13.35M13.35 6.65L14.95 5.05M13 10A3 3 0 1 1 7 10A3 3 0 0 1 13 10Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function MoonIcon({ className = '' }: SidebarIconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M15.25 11.9A6.75 6.75 0 0 1 8.1 4.75A6.75 6.75 0 1 0 15.25 11.9Z"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+function LogoutIcon({ className = '' }: SidebarIconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M8 4.75H6.75A1.75 1.75 0 0 0 5 6.5V13.5C5 14.4665 5.7835 15.25 6.75 15.25H8M11.5 6.5L14.75 10M14.75 10L11.5 13.5M14.75 10H8"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 const navigationIcons = {
   [appRoutes.dashboard]: DashboardIcon,
   [appRoutes.products]: BoxIcon,
@@ -102,7 +147,20 @@ const navigationIcons = {
   [appRoutes.newSale]: PlusCircleIcon,
 } as const
 
-export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
+export function AppSidebar({
+  isCollapsed,
+  onToggle,
+  themeMode,
+  onToggleTheme,
+}: AppSidebarProps) {
+  const navigate = useNavigate()
+  const { signOut } = useAuth()
+
+  function handleSignOut() {
+    signOut()
+    navigate(appRoutes.login, { replace: true })
+  }
+
   return (
     <aside
       className={[
@@ -232,10 +290,80 @@ export function AppSidebar({ isCollapsed, onToggle }: AppSidebarProps) {
               isCollapsed ? 'mx-auto w-10 truncate' : 'block',
             ].join(' ')}
           >
-            {isCollapsed
-              ? 'API'
-              : 'Sistema integrado com a API para operação e acompanhamento.'}
+            {isCollapsed ? 'API' : 'Sistema integrado com a API para operação e acompanhamento.'}
           </p>
+        </div>
+
+        <div className={['mt-3 grid gap-2', isCollapsed ? 'justify-center' : 'grid-cols-1'].join(' ')}>
+          {isCollapsed ? (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              title={themeMode === 'dark' ? 'Tema claro' : 'Tema escuro'}
+              aria-label={themeMode === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-200 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus:outline-none focus:ring-4 focus:ring-white/10"
+            >
+              {themeMode === 'dark' ? (
+                <SunIcon className="h-[18px] w-[18px]" />
+              ) : (
+                <MoonIcon className="h-[18px] w-[18px]" />
+              )}
+            </button>
+          ) : (
+            <button
+              type="button"
+              onClick={onToggleTheme}
+              title={themeMode === 'dark' ? 'Tema claro' : 'Tema escuro'}
+              aria-label={themeMode === 'dark' ? 'Ativar tema claro' : 'Ativar tema escuro'}
+              className="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-3 py-2.5 text-slate-200 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus:outline-none focus:ring-4 focus:ring-white/10"
+            >
+              <span className="flex items-center gap-2">
+                <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03]">
+                  {themeMode === 'dark' ? (
+                    <SunIcon className="h-[18px] w-[18px]" />
+                  ) : (
+                    <MoonIcon className="h-[18px] w-[18px]" />
+                  )}
+                </span>
+                <span className="text-left">
+                  <span className="block text-sm font-medium">Tema</span>
+                  <span className="block text-xs text-slate-400">
+                    {themeMode === 'dark' ? 'Escuro ativo' : 'Claro ativo'}
+                  </span>
+                </span>
+              </span>
+
+              <span
+                className={[
+                  'relative inline-flex h-7 w-12 shrink-0 items-center rounded-full border transition',
+                  themeMode === 'dark'
+                    ? 'border-cyan-400/25 bg-cyan-400/20'
+                    : 'border-white/10 bg-slate-900/40',
+                ].join(' ')}
+              >
+                <span
+                  className={[
+                    'inline-block h-5 w-5 rounded-full bg-white shadow-sm transition-transform',
+                    themeMode === 'dark' ? 'translate-x-6' : 'translate-x-1',
+                  ].join(' ')}
+                />
+              </span>
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={handleSignOut}
+            title="Sair"
+            aria-label="Sair"
+            className={[
+              'inline-flex items-center rounded-2xl border border-white/10 bg-white/[0.04] text-slate-200 transition hover:border-white/20 hover:bg-white/[0.08] hover:text-white focus:outline-none focus:ring-4 focus:ring-white/10',
+              isCollapsed ? 'h-11 w-11 justify-center' : 'gap-2 px-3 py-2.5',
+            ].join(' ')}
+          >
+            <LogoutIcon className="h-[18px] w-[18px]" />
+            {!isCollapsed ? <span className="text-sm font-medium">Sair</span> : null}
+          </button>
         </div>
       </div>
     </aside>

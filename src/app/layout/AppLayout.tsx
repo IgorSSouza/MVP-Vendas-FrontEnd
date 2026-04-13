@@ -48,15 +48,14 @@ export function AppLayout() {
         <AppSidebar
           isCollapsed={isSidebarCollapsed}
           onToggle={() => setIsSidebarCollapsed((currentValue) => !currentValue)}
+          themeMode={themeMode}
+          onToggleTheme={() =>
+            setThemeMode((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
+          }
         />
 
         <div className="flex min-h-screen min-w-0 flex-1 flex-col">
-          <AppTopbar
-            themeMode={themeMode}
-            onToggleTheme={() =>
-              setThemeMode((currentTheme) => (currentTheme === 'dark' ? 'light' : 'dark'))
-            }
-          />
+          <AppTopbar />
 
           <main className="flex-1 px-3 py-4 sm:px-5 sm:py-5 lg:px-6 lg:py-6 xl:px-8">
             <div
