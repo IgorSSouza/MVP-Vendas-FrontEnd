@@ -9,7 +9,7 @@ import { AppSelect } from '@presentation/components/shared/AppSelect'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
 import { PageHeader } from '@presentation/components/shared/PageHeader'
-import { getApiErrorMessage } from '@shared/api/http-client'
+import { ApiError, getApiErrorMessage } from '@shared/api/http-client'
 import { productsApi } from '@shared/api/products-api'
 
 type StatusFilter = 'all' | 'active' | 'inactive'
@@ -20,12 +20,25 @@ type SortOption =
   | 'created-asc'
   | 'stock-asc'
   | 'stock-desc'
+
 type Feedback = {
   type: 'success' | 'error'
   message: string
 }
 
 const pageSizeOptions = [8, 12, 20]
+
+function resolveProductSaveErrorMessage(error: unknown) {
+  if (error instanceof ApiError) {
+    const normalizedMessage = error.message.toLowerCase()
+
+    if (normalizedMessage.includes('barcode') || normalizedMessage.includes('código')) {
+      return 'Já existe um produto com este código de barras. Informe outro valor ou deixe o campo em branco.'
+    }
+  }
+
+  return getApiErrorMessage(error, 'Não foi possível salvar o produto.')
+}
 
 export function ProductsPage() {
   const statusOptions = [
@@ -54,10 +67,12 @@ export function ProductsPage() {
   const filteredProducts = useMemo(() => {
     const visibleProducts = products.filter((product) => {
       const normalizedSearch = search.trim().toLowerCase()
+      const barcode = product.barcode?.toLowerCase() ?? ''
       const matchesSearch =
         !normalizedSearch ||
         product.name.toLowerCase().includes(normalizedSearch) ||
-        product.category.toLowerCase().includes(normalizedSearch)
+        product.category.toLowerCase().includes(normalizedSearch) ||
+        barcode.includes(normalizedSearch)
 
       const matchesStatus =
         statusFilter === 'all' ||
@@ -91,7 +106,6 @@ export function ProductsPage() {
 
   const paginatedProducts = useMemo(() => {
     const start = (currentPage - 1) * pageSize
-
     return filteredProducts.slice(start, start + pageSize)
   }, [currentPage, filteredProducts, pageSize])
 
@@ -156,15 +170,20 @@ export function ProductsPage() {
     setIsSubmitting(true)
     setFeedback(null)
 
+    const payload = {
+      ...values,
+      barcode: values.barcode || null,
+    }
+
     try {
       if (selectedProduct) {
-        await productsApi.update(selectedProduct.id, values)
+        await productsApi.update(selectedProduct.id, payload)
         setFeedback({
           type: 'success',
           message: 'Produto atualizado com sucesso.',
         })
       } else {
-        await productsApi.create(values)
+        await productsApi.create(payload)
         setFeedback({
           type: 'success',
           message: 'Produto cadastrado com sucesso.',
@@ -177,7 +196,7 @@ export function ProductsPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(error, 'Não foi possível salvar o produto.'),
+        message: resolveProductSaveErrorMessage(error),
       })
     } finally {
       setIsSubmitting(false)
@@ -200,10 +219,7 @@ export function ProductsPage() {
     } catch (error) {
       setFeedback({
         type: 'error',
-        message: getApiErrorMessage(
-          error,
-          'Não foi possível alterar o status do produto.',
-        ),
+        message: getApiErrorMessage(error, 'Não foi possível alterar o status do produto.'),
       })
     } finally {
       setProcessingProductId(null)
@@ -216,7 +232,7 @@ export function ProductsPage() {
         <PageHeader
           eyebrow="Produtos"
           title="Catálogo de produtos"
-          description="Centralize os itens da operação, acompanhe status e estoque e mantenha o catálogo pronto para vender com agilidade."
+          description="Centralize os itens da operação, acompanhe status, estoque e código de barras e mantenha o catálogo pronto para vender com agilidade."
           action={
             <button
               type="button"
@@ -229,7 +245,7 @@ export function ProductsPage() {
         />
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3 app-enter-soft-delay-1">
+      <div className="grid gap-4 app-enter-soft-delay-1 sm:grid-cols-2 xl:grid-cols-3">
         <article className="app-surface-muted p-5">
           <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500 dark:text-slate-400">
             Visão geral
@@ -277,7 +293,8 @@ export function ProductsPage() {
               Encontre, edite e acompanhe os itens com rapidez
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Filtre por nome, categoria ou status e acesse as ações principais sem perder o contexto da listagem.
+              Filtre por nome, categoria, código de barras ou status e acesse as ações
+              principais sem perder o contexto da listagem.
             </p>
           </div>
 
@@ -291,22 +308,22 @@ export function ProductsPage() {
 
         <div className="mt-5 grid gap-4 xl:grid-cols-[minmax(0,1.5fr)_220px_auto]">
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Buscar</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Buscar
+            </span>
             <input
               value={search}
               onChange={(event) => setSearch(event.target.value)}
-              placeholder="Busque por nome do produto ou categoria"
+              placeholder="Busque por nome, categoria ou código"
               className="app-input"
             />
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Status</span>
-            <AppSelect
-              value={statusFilter}
-              onChange={setStatusFilter}
-              options={statusOptions}
-            />
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Status
+            </span>
+            <AppSelect value={statusFilter} onChange={setStatusFilter} options={statusOptions} />
           </label>
 
           <div className="flex items-end xl:justify-end">

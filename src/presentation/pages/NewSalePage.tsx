@@ -91,9 +91,14 @@ export function NewSalePage() {
       return activeProducts
     }
 
-    return activeProducts.filter((product) =>
-      product.name.toLowerCase().includes(normalizedSearch),
-    )
+    return activeProducts.filter((product) => {
+      const barcode = product.barcode?.toLowerCase() ?? ''
+
+      return (
+        product.name.toLowerCase().includes(normalizedSearch) ||
+        barcode.includes(normalizedSearch)
+      )
+    })
   }, [activeProducts, productSearch])
 
   const filteredServices = useMemo(() => {
@@ -418,7 +423,7 @@ export function NewSalePage() {
               title="Produtos ativos"
               description="Busque e selecione produtos disponíveis em estoque para compor a venda."
               searchValue={productSearch}
-              searchPlaceholder="Buscar produto pelo nome"
+              searchPlaceholder="Buscar produto por nome ou código"
               onSearchChange={setProductSearch}
               items={filteredProducts.map((product) => ({
                 ...product,

@@ -112,14 +112,10 @@ export function ProductTable({
         </span>
       </div>
 
-      <div className="grid gap-4 border-b border-slate-200/80 px-5 py-4 dark:border-slate-800/80 xl:grid-cols-[minmax(0,1fr)_220px_180px] sm:px-6">
+      <div className="grid gap-4 border-b border-slate-200/80 px-5 py-4 dark:border-slate-800/80 sm:px-6 xl:grid-cols-[minmax(0,1fr)_220px_180px]">
         <label className="grid gap-2">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Ordenar por</span>
-          <AppSelect
-            value={sortOption}
-            onChange={onSortChange}
-            options={sortOptions}
-          />
+          <AppSelect value={sortOption} onChange={onSortChange} options={sortOptions} />
         </label>
 
         <label className="grid gap-2">
@@ -157,6 +153,9 @@ export function ProductTable({
                   <p className="mt-1 truncate text-xs text-slate-500 dark:text-slate-400">
                     ID: {product.id}
                   </p>
+                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    {product.barcode ? `Código: ${product.barcode}` : 'Sem código'}
+                  </p>
                 </div>
 
                 <ProductStatusBadge isActive={product.isActive} />
@@ -165,6 +164,9 @@ export function ProductTable({
               <div className="mt-4 flex flex-wrap gap-2">
                 <span className="app-badge border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
                   {product.category}
+                </span>
+                <span className="app-badge border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                  {product.barcode || 'Sem código'}
                 </span>
                 <span
                   className={[
@@ -249,6 +251,7 @@ export function ProductTable({
           <thead>
             <tr>
               <th className="px-6 py-4">Produto</th>
+              <th className="px-6 py-4">Código</th>
               <th className="px-6 py-4">Categoria</th>
               <th className="px-6 py-4">Custo</th>
               <th className="px-6 py-4">Venda</th>
@@ -273,6 +276,11 @@ export function ProductTable({
                         ID: {product.id}
                       </p>
                     </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className="text-sm text-slate-600 dark:text-slate-300">
+                      {product.barcode || 'Sem código'}
+                    </span>
                   </td>
                   <td className="px-6 py-5">
                     <span className="app-badge border-slate-200 bg-slate-100 text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">

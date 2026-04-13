@@ -1,4 +1,5 @@
 import type { Product } from '@domain/entities'
+
 import { httpRequest } from '@shared/api/http-client'
 
 type ProductPayload = Omit<Product, 'id' | 'createdAt' | 'updatedAt'>

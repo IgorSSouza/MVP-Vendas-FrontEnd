@@ -23,6 +23,7 @@ type ProductFormPanelProps = {
 const defaultValues: ProductFormValues = {
   name: '',
   category: '',
+  barcode: '',
   costPrice: 0,
   salePrice: 0,
   stockQuantity: 0,
@@ -68,6 +69,7 @@ export function ProductFormPanel({
       reset({
         name: product.name,
         category: product.category,
+        barcode: product.barcode ?? '',
         costPrice: product.costPrice,
         salePrice: product.salePrice,
         stockQuantity: product.stockQuantity,
@@ -127,7 +129,8 @@ export function ProductFormPanel({
                 {product ? 'Editar produto' : 'Novo produto'}
               </h2>
               <p className="mt-2 max-w-md text-sm leading-6 text-slate-600 dark:text-slate-400">
-                Preencha os dados principais para manter o catálogo organizado, com preço, estoque e status prontos para a operação.
+                Preencha os dados principais para manter o catálogo organizado, com preço,
+                estoque, código de barras e status prontos para a operação.
               </p>
             </div>
 
@@ -189,7 +192,9 @@ export function ProductFormPanel({
               </div>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Nome</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Nome
+                </span>
                 <input
                   {...register('name')}
                   className="app-input"
@@ -201,7 +206,9 @@ export function ProductFormPanel({
               </label>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Categoria</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Categoria
+                </span>
                 <input
                   {...register('category')}
                   className="app-input"
@@ -212,9 +219,31 @@ export function ProductFormPanel({
                 ) : null}
               </label>
 
+              <label className="grid gap-2">
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Código de barras
+                </span>
+                <input
+                  {...register('barcode')}
+                  className="app-input"
+                  placeholder="Ex.: 7891234567890"
+                  inputMode="numeric"
+                  maxLength={14}
+                  autoComplete="off"
+                />
+                <span className="text-xs leading-5 text-slate-500 dark:text-slate-400">
+                  Campo opcional. Aceita 8, 12, 13 ou 14 dígitos.
+                </span>
+                {errors.barcode ? (
+                  <span className="text-sm text-rose-600">{errors.barcode.message}</span>
+                ) : null}
+              </label>
+
               <div className="grid gap-5 sm:grid-cols-2">
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Custo</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Custo
+                  </span>
                   <Controller
                     control={control}
                     name="costPrice"
@@ -233,7 +262,9 @@ export function ProductFormPanel({
                 </label>
 
                 <label className="grid gap-2">
-                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Preço de venda</span>
+                  <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                    Preço de venda
+                  </span>
                   <Controller
                     control={control}
                     name="salePrice"
@@ -264,7 +295,9 @@ export function ProductFormPanel({
               </div>
 
               <label className="grid gap-2">
-                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Estoque</span>
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Estoque
+                </span>
                 <input
                   {...register('stockQuantity', { valueAsNumber: true })}
                   type="number"
@@ -273,7 +306,8 @@ export function ProductFormPanel({
                   className="app-input"
                 />
                 <span className="text-xs leading-5 text-slate-500 dark:text-slate-400">
-                  Estoque inicial atual: {stockQuantity || 0} {stockQuantity === 1 ? 'unidade' : 'unidades'}.
+                  Estoque inicial atual: {stockQuantity || 0}{' '}
+                  {stockQuantity === 1 ? 'unidade' : 'unidades'}.
                 </span>
                 {errors.stockQuantity ? (
                   <span className="text-sm text-rose-600">{errors.stockQuantity.message}</span>
