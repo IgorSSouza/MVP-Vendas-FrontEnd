@@ -15,6 +15,7 @@ type CreateSaleItemInput = Omit<SaleItem, 'id' | 'subtotal' | 'profit'>
 type CreateSaleInput = {
   items: CreateSaleItemInput[]
   paymentMethod: Sale['paymentMethod']
+  installments: number
   discount: number
 }
 
@@ -57,11 +58,17 @@ export const saleRepository = {
     const subtotal = calculateSaleSubtotal(items)
     const total = calculateSaleTotal(subtotal, input.discount)
     const profit = calculateSaleProfit(items, input.discount)
+    const installments =
+      input.paymentMethod === 'credit_card'
+        ? Math.min(Math.max(input.installments, 1), 12)
+        : 1
 
     const sale: Sale = {
       id: generateMockId('sale'),
       items,
       paymentMethod: input.paymentMethod,
+      installments,
+      installmentAmount: total / installments,
       discount: input.discount,
       subtotal,
       total,

@@ -10,11 +10,14 @@ type SaleSummaryCardProps = {
   subtotal: number
   total: number
   profit: number
-  paymentMethod: string
+  paymentMethod: PaymentMethod
+  installments: number
+  installmentAmount: number
   isSubmitting: boolean
   canSubmit: boolean
   onDiscountChange: (discount: number) => void
   onPaymentMethodChange: (paymentMethod: PaymentMethod) => void
+  onInstallmentsChange: (installments: number) => void
   onSubmit: () => Promise<void>
 }
 
@@ -24,16 +27,30 @@ export function SaleSummaryCard({
   total,
   profit,
   paymentMethod,
+  installments,
+  installmentAmount,
   isSubmitting,
   canSubmit,
   onDiscountChange,
   onPaymentMethodChange,
+  onInstallmentsChange,
   onSubmit,
 }: SaleSummaryCardProps) {
   const paymentOptions = Object.values(PaymentMethod).map((method) => ({
     value: method,
     label: getPaymentMethodLabel(method),
   }))
+
+  const installmentOptions = Array.from({ length: 12 }, (_, index) => {
+    const value = index + 1
+
+    return {
+      value,
+      label: `${value}x`,
+    }
+  })
+
+  const isCreditCard = paymentMethod === PaymentMethod.CREDIT_CARD
 
   return (
     <aside className="app-surface p-5 sm:p-6 2xl:sticky 2xl:top-6">
@@ -55,11 +72,27 @@ export function SaleSummaryCard({
             Forma de pagamento
           </span>
           <AppSelect
-            value={paymentMethod as PaymentMethod}
+            value={paymentMethod}
             onChange={onPaymentMethodChange}
             options={paymentOptions}
           />
         </label>
+
+        {isCreditCard ? (
+          <label className="grid gap-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Parcelas
+            </span>
+            <AppSelect
+              value={installments}
+              onChange={onInstallmentsChange}
+              options={installmentOptions}
+            />
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              Prévia atual: {installments}x de {formatCurrency(installmentAmount)}.
+            </span>
+          </label>
+        ) : null}
 
         <label className="grid gap-2">
           <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Desconto</span>
@@ -84,6 +117,14 @@ export function SaleSummaryCard({
               {formatCurrency(discount)}
             </strong>
           </div>
+          {isCreditCard ? (
+            <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
+              <span>Parcelamento</span>
+              <strong className="text-slate-900 dark:text-slate-100">
+                {installments}x de {formatCurrency(installmentAmount)}
+              </strong>
+            </div>
+          ) : null}
           <div className="flex items-center justify-between border-t border-slate-200 pt-3 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-400">
             <span>Total</span>
             <strong className="text-2xl font-semibold text-slate-950 dark:text-slate-50">

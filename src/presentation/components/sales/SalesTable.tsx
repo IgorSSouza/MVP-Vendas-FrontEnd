@@ -1,5 +1,9 @@
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
-import { formatCurrency, formatDateTime } from '@presentation/components/sales/sale-utils'
+import {
+  formatCurrency,
+  formatDateTime,
+  getInstallmentLabel,
+} from '@presentation/components/sales/sale-utils'
 import { AppSelect } from '@presentation/components/shared/AppSelect'
 import type { SaleListItem } from '@shared/api/sales-api'
 
@@ -87,9 +91,19 @@ export function SalesTable({
           <p className="mt-2 text-sm leading-6 text-slate-500 dark:text-slate-400">
             {pageStart > 0 ? (
               <>
-                Exibindo <span className="font-semibold text-slate-900 dark:text-slate-100">{pageStart}</span> a{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{pageEnd}</span> de{' '}
-                <span className="font-semibold text-slate-900 dark:text-slate-100">{totalItems}</span> vendas.
+                Exibindo{' '}
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {pageStart}
+                </span>{' '}
+                a{' '}
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {pageEnd}
+                </span>{' '}
+                de{' '}
+                <span className="font-semibold text-slate-900 dark:text-slate-100">
+                  {totalItems}
+                </span>{' '}
+                vendas.
               </>
             ) : (
               'Nenhuma venda para exibir no momento.'
@@ -102,14 +116,18 @@ export function SalesTable({
         </span>
       </div>
 
-      <div className="grid gap-4 border-b border-slate-200/80 px-5 py-4 dark:border-slate-800/80 xl:grid-cols-[minmax(0,1fr)_220px_180px] sm:px-6">
+      <div className="grid gap-4 border-b border-slate-200/80 px-5 py-4 dark:border-slate-800/80 sm:px-6 xl:grid-cols-[minmax(0,1fr)_220px_180px]">
         <label className="grid gap-2">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Ordenar por</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Ordenar por
+          </span>
           <AppSelect value={sortOption} onChange={onSortChange} options={sortOptions} />
         </label>
 
         <label className="grid gap-2">
-          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Itens por página</span>
+          <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+            Itens por página
+          </span>
           <AppSelect
             value={pageSize}
             onChange={onPageSizeChange}
@@ -119,81 +137,100 @@ export function SalesTable({
 
         <div className="flex items-end">
           <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 px-4 py-3 text-sm text-slate-600 shadow-sm dark:border-slate-800/80 dark:bg-slate-900/70 dark:text-slate-300">
-            Página <span className="font-semibold text-slate-950 dark:text-slate-50">{currentPage}</span> de{' '}
+            Página{' '}
+            <span className="font-semibold text-slate-950 dark:text-slate-50">{currentPage}</span>{' '}
+            de{' '}
             <span className="font-semibold text-slate-950 dark:text-slate-50">{totalPages}</span>
           </div>
         </div>
       </div>
 
       <div className="grid gap-4 p-4 2xl:hidden">
-        {sales.map((sale) => (
-          <article
-            key={sale.id}
-            className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-950/5 dark:border-slate-800/80 dark:bg-slate-950/60 dark:shadow-black/20"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h3 className="truncate text-base font-semibold tracking-tight text-slate-950 dark:text-slate-50">
-                  {sale.id}
-                </h3>
+        {sales.map((sale) => {
+          const installmentLabel = getInstallmentLabel(sale.installments, sale.installmentAmount)
+
+          return (
+            <article
+              key={sale.id}
+              className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm shadow-slate-950/5 dark:border-slate-800/80 dark:bg-slate-950/60 dark:shadow-black/20"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="truncate text-base font-semibold tracking-tight text-slate-950 dark:text-slate-50">
+                    {sale.id}
+                  </h3>
+                </div>
+
+                <div className="flex flex-col items-end gap-2">
+                  <SalePaymentBadge paymentMethod={sale.paymentMethod} />
+                  {installmentLabel ? (
+                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
+                      {sale.installments}x
+                    </span>
+                  ) : null}
+                </div>
               </div>
 
-              <SalePaymentBadge paymentMethod={sale.paymentMethod} />
-            </div>
+              <dl className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800/80 dark:bg-slate-900/70">
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Data
+                  </dt>
+                  <dd className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {formatDateTime(sale.createdAt)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Itens
+                  </dt>
+                  <dd className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+                    {sale.itemCount}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Total
+                  </dt>
+                  <dd className="mt-2 text-sm font-semibold text-slate-950 dark:text-slate-50">
+                    {formatCurrency(sale.total)}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                    Lucro
+                  </dt>
+                  <dd
+                    className={[
+                      'mt-2 text-sm font-semibold',
+                      sale.profit >= 0
+                        ? 'text-emerald-700 dark:text-emerald-300'
+                        : 'text-rose-600 dark:text-rose-300',
+                    ].join(' ')}
+                  >
+                    {formatCurrency(sale.profit)}
+                  </dd>
+                </div>
+              </dl>
 
-            <dl className="mt-4 grid grid-cols-2 gap-3 rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800/80 dark:bg-slate-900/70">
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  Data
-                </dt>
-                <dd className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {formatDateTime(sale.createdAt)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  Itens
-                </dt>
-                <dd className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
-                  {sale.itemCount}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  Total
-                </dt>
-                <dd className="mt-2 text-sm font-semibold text-slate-950 dark:text-slate-50">
-                  {formatCurrency(sale.total)}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                  Lucro
-                </dt>
-                <dd
-                  className={[
-                    'mt-2 text-sm font-semibold',
-                    sale.profit >= 0
-                      ? 'text-emerald-700 dark:text-emerald-300'
-                      : 'text-rose-600 dark:text-rose-300',
-                  ].join(' ')}
+              {installmentLabel ? (
+                <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
+                  Parcelamento: <span className="font-medium">{installmentLabel}</span>
+                </p>
+              ) : null}
+
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => onOpenDetails(sale)}
+                  className="app-button-secondary w-full"
                 >
-                  {formatCurrency(sale.profit)}
-                </dd>
+                  Ver detalhes
+                </button>
               </div>
-            </dl>
-
-            <div className="mt-4">
-              <button
-                type="button"
-                onClick={() => onOpenDetails(sale)}
-                className="app-button-secondary w-full"
-              >
-                Ver detalhes
-              </button>
-            </div>
-          </article>
-        ))}
+            </article>
+          )
+        })}
       </div>
 
       <div className="hidden overflow-x-auto 2xl:block">
@@ -210,47 +247,63 @@ export function SalesTable({
             </tr>
           </thead>
           <tbody>
-            {sales.map((sale) => (
-              <tr key={sale.id}>
-                <td className="px-6 py-5">
-                  <div className="min-w-0">
-                    <p className="truncate font-semibold text-slate-900 dark:text-slate-100">{sale.id}</p>
-                  </div>
-                </td>
-                <td className="px-6 py-5">{formatDateTime(sale.createdAt)}</td>
-                <td className="px-6 py-5">{sale.itemCount}</td>
-                <td className="px-6 py-5">
-                  <SalePaymentBadge paymentMethod={sale.paymentMethod} />
-                </td>
-                <td className="px-6 py-5">
-                  <span className="font-semibold text-slate-900 dark:text-slate-100">
-                    {formatCurrency(sale.total)}
-                  </span>
-                </td>
-                <td className="px-6 py-5">
-                  <span
-                    className={
-                      sale.profit >= 0
-                        ? 'text-emerald-700 dark:text-emerald-300'
-                        : 'text-rose-600 dark:text-rose-300'
-                    }
-                  >
-                    {formatCurrency(sale.profit)}
-                  </span>
-                </td>
-                <td className="px-6 py-5">
-                  <div className="flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => onOpenDetails(sale)}
-                      className="app-button-secondary rounded-xl px-3 py-2"
+            {sales.map((sale) => {
+              const installmentLabel = getInstallmentLabel(
+                sale.installments,
+                sale.installmentAmount,
+              )
+
+              return (
+                <tr key={sale.id}>
+                  <td className="px-6 py-5">
+                    <div className="min-w-0">
+                      <p className="truncate font-semibold text-slate-900 dark:text-slate-100">
+                        {sale.id}
+                      </p>
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">{formatDateTime(sale.createdAt)}</td>
+                  <td className="px-6 py-5">{sale.itemCount}</td>
+                  <td className="px-6 py-5">
+                    <div className="flex flex-col items-start gap-2">
+                      <SalePaymentBadge paymentMethod={sale.paymentMethod} />
+                      {installmentLabel ? (
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          {sale.installments}x
+                        </span>
+                      ) : null}
+                    </div>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span className="font-semibold text-slate-900 dark:text-slate-100">
+                      {formatCurrency(sale.total)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <span
+                      className={
+                        sale.profit >= 0
+                          ? 'text-emerald-700 dark:text-emerald-300'
+                          : 'text-rose-600 dark:text-rose-300'
+                      }
                     >
-                      Ver detalhes
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
+                      {formatCurrency(sale.profit)}
+                    </span>
+                  </td>
+                  <td className="px-6 py-5">
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => onOpenDetails(sale)}
+                        className="app-button-secondary rounded-xl px-3 py-2"
+                      >
+                        Ver detalhes
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              )
+            })}
           </tbody>
         </table>
       </div>
@@ -259,9 +312,14 @@ export function SalesTable({
         <p className="text-sm text-slate-500 dark:text-slate-400">
           {pageStart > 0 ? (
             <>
-              Mostrando <span className="font-medium text-slate-900 dark:text-slate-100">{pageStart}</span>–
-              <span className="font-medium text-slate-900 dark:text-slate-100">{pageEnd}</span> de{' '}
-              <span className="font-medium text-slate-900 dark:text-slate-100">{totalItems}</span> vendas.
+              Mostrando{' '}
+              <span className="font-medium text-slate-900 dark:text-slate-100">{pageStart}</span>–
+              <span className="font-medium text-slate-900 dark:text-slate-100">{pageEnd}</span>{' '}
+              de{' '}
+              <span className="font-medium text-slate-900 dark:text-slate-100">
+                {totalItems}
+              </span>{' '}
+              vendas.
             </>
           ) : (
             'Nenhuma venda nesta página.'

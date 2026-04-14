@@ -11,6 +11,8 @@ type SaleListItem = {
   id: string
   createdAt: string
   paymentMethod: PaymentMethod
+  installments: number
+  installmentAmount: number
   subtotal: number
   discount: number
   total: number
@@ -39,12 +41,14 @@ type CreateSaleItemPayload = {
 
 type CreateSalePayload = {
   paymentMethod: PaymentMethod
+  installments: number
   discount: number
   items: CreateSaleItemPayload[]
 }
 
 type ApiCreateSalePayload = {
   paymentMethod: string
+  installments: number
   discount: number
   items: CreateSaleItemPayload[]
 }

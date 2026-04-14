@@ -5,6 +5,8 @@ export type Sale = {
   id: string
   items: SaleItem[]
   paymentMethod: PaymentMethod
+  installments: number
+  installmentAmount: number
   discount: number
   subtotal: number
   total: number

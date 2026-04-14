@@ -51,6 +51,7 @@ export function NewSalePage() {
   const [items, setItems] = useState<DraftSaleItem[]>([])
   const [discount, setDiscount] = useState(0)
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.PIX)
+  const [installments, setInstallments] = useState(1)
   const [isLoading, setIsLoading] = useState(true)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [feedback, setFeedback] = useState<Feedback | null>(null)
@@ -73,6 +74,12 @@ export function NewSalePage() {
 
     return () => window.clearTimeout(timeoutId)
   }, [lastAddedLabel])
+
+  useEffect(() => {
+    if (paymentMethod !== PaymentMethod.CREDIT_CARD && installments !== 1) {
+      setInstallments(1)
+    }
+  }, [installments, paymentMethod])
 
   const activeProducts = useMemo(
     () => products.filter((product) => product.isActive),
@@ -118,14 +125,18 @@ export function NewSalePage() {
     const sanitizedDiscount = Math.max(discount, 0)
     const total = calculateSaleTotal(subtotal, sanitizedDiscount)
     const profit = calculateSaleProfit(items, sanitizedDiscount)
+    const normalizedInstallments =
+      paymentMethod === PaymentMethod.CREDIT_CARD ? Math.min(Math.max(installments, 1), 12) : 1
 
     return {
       subtotal,
       discount: sanitizedDiscount,
       total,
       profit,
+      installments: normalizedInstallments,
+      installmentAmount: total / normalizedInstallments,
     }
-  }, [discount, items])
+  }, [discount, installments, items, paymentMethod])
 
   async function loadData(showLoading = true) {
     if (showLoading) {
@@ -333,6 +344,7 @@ export function NewSalePage() {
           quantity: item.quantity,
         })),
         paymentMethod,
+        installments: summary.installments,
         discount: summary.discount,
       })
 
@@ -341,6 +353,7 @@ export function NewSalePage() {
       setItems([])
       setDiscount(0)
       setPaymentMethod(PaymentMethod.PIX)
+      setInstallments(1)
       setLastAddedLabel(null)
       setFeedback({
         type: 'success',
@@ -490,6 +503,8 @@ export function NewSalePage() {
             total={summary.total}
             profit={summary.profit}
             paymentMethod={paymentMethod}
+            installments={summary.installments}
+            installmentAmount={summary.installmentAmount}
             isSubmitting={isSubmitting}
             canSubmit={items.length > 0}
             onDiscountChange={(value) => {
@@ -497,6 +512,7 @@ export function NewSalePage() {
               setDiscount(Math.max(value, 0))
             }}
             onPaymentMethodChange={setPaymentMethod}
+            onInstallmentsChange={setInstallments}
             onSubmit={handleSubmit}
           />
         </div>

@@ -35,15 +35,22 @@ function createSale(input: {
   id: string
   items: SaleItem[]
   paymentMethod: Sale['paymentMethod']
+  installments?: number
   discount: number
   createdAt: string
 }): Sale {
   const subtotal = calculateSaleSubtotal(input.items)
   const total = calculateSaleTotal(subtotal, input.discount)
   const profit = calculateSaleProfit(input.items, input.discount)
+  const installments =
+    input.paymentMethod === PaymentMethod.CREDIT_CARD
+      ? Math.min(Math.max(input.installments ?? 1, 1), 12)
+      : 1
 
   return {
     ...input,
+    installments,
+    installmentAmount: total / installments,
     subtotal,
     total,
     profit,
@@ -80,6 +87,7 @@ export const mockSales: Sale[] = [
   createSale({
     id: 'sale_002',
     paymentMethod: PaymentMethod.CREDIT_CARD,
+    installments: 3,
     discount: 15,
     createdAt: '2026-04-04T10:40:00.000Z',
     items: [
