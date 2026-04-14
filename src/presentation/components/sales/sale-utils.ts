@@ -1,4 +1,5 @@
 import { PaymentMethod, SaleItemType } from '@domain/enums'
+import type { SaleStatus } from '@domain/entities/Sale'
 import { formatCurrency, formatDateTime } from '@shared/utils/formatters'
 
 export { formatCurrency, formatDateTime }
@@ -20,6 +21,10 @@ export function getInstallmentLabel(installments: number, installmentAmount: num
   }
 
   return `${installments}x de ${formatCurrency(installmentAmount)}`
+}
+
+export function getSaleStatusLabel(status: SaleStatus) {
+  return status === 'reversed' ? 'Estornada' : 'Concluída'
 }
 
 export function getItemTypeLabel(itemType: string) {

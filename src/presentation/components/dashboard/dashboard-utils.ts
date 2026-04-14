@@ -31,6 +31,10 @@ function isSameDay(firstDate: Date, secondDate: Date) {
   )
 }
 
+function isCompletedSale(sale: SaleListItem) {
+  return sale.status === 'completed'
+}
+
 export function filterSalesByPeriod(
   sales: SaleListItem[],
   period: DashboardPeriod,
@@ -39,6 +43,10 @@ export function filterSalesByPeriod(
   const currentDate = new Date(now)
 
   return sales.filter((sale) => {
+    if (!isCompletedSale(sale)) {
+      return false
+    }
+
     const saleDate = new Date(sale.createdAt)
 
     switch (period) {
@@ -57,12 +65,16 @@ export function filterSalesByPeriod(
 }
 
 export function getTodaySalesCount(sales: SaleListItem[], now = new Date()) {
-  return sales.filter((sale) => isSameDay(new Date(sale.createdAt), now)).length
+  return sales.filter((sale) => {
+    return isCompletedSale(sale) && isSameDay(new Date(sale.createdAt), now)
+  }).length
 }
 
 export function getCurrentMonthSalesCount(sales: SaleListItem[], now = new Date()) {
   const monthStart = startOfMonth(now)
-  return sales.filter((sale) => new Date(sale.createdAt) >= monthStart).length
+  return sales.filter((sale) => {
+    return isCompletedSale(sale) && new Date(sale.createdAt) >= monthStart
+  }).length
 }
 
 export function summarizeSales(sales: SaleListItem[]) {

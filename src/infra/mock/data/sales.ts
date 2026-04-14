@@ -38,6 +38,9 @@ function createSale(input: {
   installments?: number
   discount: number
   createdAt: string
+  status?: Sale['status']
+  reversedAt?: string | null
+  reversalReason?: string | null
 }): Sale {
   const subtotal = calculateSaleSubtotal(input.items)
   const total = calculateSaleTotal(subtotal, input.discount)
@@ -49,6 +52,9 @@ function createSale(input: {
 
   return {
     ...input,
+    status: input.status ?? 'completed',
+    reversedAt: input.reversedAt ?? null,
+    reversalReason: input.reversalReason ?? null,
     installments,
     installmentAmount: total / installments,
     subtotal,
@@ -104,7 +110,7 @@ export const mockSales: Sale[] = [
         id: 'sale_item_004',
         itemType: SaleItemType.PRODUCT,
         itemId: 'product_tempered_glass',
-        name: 'Pelicula 3D Samsung A54',
+        name: 'Película 3D Samsung A54',
         quantity: 1,
         unitCostPrice: 8,
         unitSalePrice: 24.9,
@@ -125,6 +131,9 @@ export const mockSales: Sale[] = [
     paymentMethod: PaymentMethod.DEBIT_CARD,
     discount: 0,
     createdAt: '2026-04-05T15:05:00.000Z',
+    status: 'reversed',
+    reversedAt: '2026-04-06T12:10:00.000Z',
+    reversalReason: 'Cliente desistiu da compra.',
     items: [
       createSaleItem({
         id: 'sale_item_006',

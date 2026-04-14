@@ -1,4 +1,5 @@
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
+import { SaleStatusBadge } from '@presentation/components/sales/SaleStatusBadge'
 import {
   formatCurrency,
   formatDateTime,
@@ -162,12 +163,8 @@ export function SalesTable({
                 </div>
 
                 <div className="flex flex-col items-end gap-2">
+                  <SaleStatusBadge status={sale.status} />
                   <SalePaymentBadge paymentMethod={sale.paymentMethod} />
-                  {installmentLabel ? (
-                    <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-                      {sale.installments}x
-                    </span>
-                  ) : null}
                 </div>
               </div>
 
@@ -213,11 +210,14 @@ export function SalesTable({
                 </div>
               </dl>
 
-              {installmentLabel ? (
-                <p className="mt-3 text-sm text-slate-500 dark:text-slate-400">
-                  Parcelamento: <span className="font-medium">{installmentLabel}</span>
-                </p>
-              ) : null}
+              <div className="mt-3 space-y-1 text-sm text-slate-500 dark:text-slate-400">
+                {installmentLabel ? (
+                  <p>
+                    Parcelamento: <span className="font-medium">{installmentLabel}</span>
+                  </p>
+                ) : null}
+                {sale.status === 'reversed' ? <p>Venda estornada.</p> : null}
+              </div>
 
               <div className="mt-4">
                 <button
@@ -240,6 +240,7 @@ export function SalesTable({
               <th className="px-6 py-4">Venda</th>
               <th className="px-6 py-4">Data</th>
               <th className="px-6 py-4">Itens</th>
+              <th className="px-6 py-4">Status</th>
               <th className="px-6 py-4">Pagamento</th>
               <th className="px-6 py-4">Total</th>
               <th className="px-6 py-4">Lucro</th>
@@ -264,6 +265,9 @@ export function SalesTable({
                   </td>
                   <td className="px-6 py-5">{formatDateTime(sale.createdAt)}</td>
                   <td className="px-6 py-5">{sale.itemCount}</td>
+                  <td className="px-6 py-5">
+                    <SaleStatusBadge status={sale.status} />
+                  </td>
                   <td className="px-6 py-5">
                     <div className="flex flex-col items-start gap-2">
                       <SalePaymentBadge paymentMethod={sale.paymentMethod} />

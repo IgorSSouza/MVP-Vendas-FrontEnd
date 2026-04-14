@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react'
+
 import type { Sale } from '@domain/entities'
 
 import {
@@ -7,28 +9,82 @@ import {
   getItemTypeLabel,
 } from '@presentation/components/sales/sale-utils'
 import { SalePaymentBadge } from '@presentation/components/sales/SalePaymentBadge'
+import { SaleStatusBadge } from '@presentation/components/sales/SaleStatusBadge'
 import { AppPortal } from '@presentation/components/shared/AppPortal'
 import { FeedbackBanner } from '@presentation/components/shared/FeedbackBanner'
 import { LoadingNotice } from '@presentation/components/shared/LoadingNotice'
+
+type ReverseFeedback = {
+  type: 'success' | 'error'
+  message: string
+}
 
 type SaleDetailsPanelProps = {
   sale: Sale | null
   isOpen: boolean
   isLoading?: boolean
+  isReversing?: boolean
   errorMessage?: string | null
+  reverseFeedback?: ReverseFeedback | null
   onClose: () => void
+  onReverse: (saleId: string, reason: string) => Promise<void>
 }
 
 export function SaleDetailsPanel({
   sale,
   isOpen,
   isLoading = false,
+  isReversing = false,
   errorMessage = null,
+  reverseFeedback = null,
   onClose,
+  onReverse,
 }: SaleDetailsPanelProps) {
+  const [isReverseFormOpen, setIsReverseFormOpen] = useState(false)
+  const [reverseReason, setReverseReason] = useState('')
+  const [localReverseError, setLocalReverseError] = useState<string | null>(null)
+
   const installmentLabel = sale
     ? getInstallmentLabel(sale.installments, sale.installmentAmount)
     : null
+
+  useEffect(() => {
+    if (!isOpen) {
+      setIsReverseFormOpen(false)
+      setReverseReason('')
+      setLocalReverseError(null)
+      return
+    }
+
+    if (sale?.status === 'reversed') {
+      setIsReverseFormOpen(false)
+      setReverseReason('')
+      setLocalReverseError(null)
+    }
+  }, [isOpen, sale?.id, sale?.status])
+
+  async function handleReverseSubmit() {
+    if (!sale) {
+      return
+    }
+
+    const normalizedReason = reverseReason.trim()
+
+    if (!normalizedReason) {
+      setLocalReverseError('Informe o motivo do estorno antes de confirmar.')
+      return
+    }
+
+    setLocalReverseError(null)
+
+    try {
+      await onReverse(sale.id, normalizedReason)
+      setIsReverseFormOpen(false)
+      setReverseReason('')
+    } catch {
+      return
+    }
+  }
 
   return (
     <AppPortal>
@@ -83,6 +139,15 @@ export function SaleDetailsPanel({
             <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
               <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800/80 dark:bg-slate-900/70">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                  Status
+                </p>
+                <div className="mt-2">
+                  <SaleStatusBadge status={sale.status} />
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800/80 dark:bg-slate-900/70">
+                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
                   Data
                 </p>
                 <p className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
@@ -112,23 +177,111 @@ export function SaleDetailsPanel({
                   {formatCurrency(sale.total)}
                 </p>
               </div>
-
-              <div className="rounded-2xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800/80 dark:bg-slate-900/70">
-                <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
-                  Lucro
-                </p>
-                <p
-                  className={[
-                    'mt-2 text-sm font-medium',
-                    sale.profit >= 0
-                      ? 'text-emerald-700 dark:text-emerald-300'
-                      : 'text-rose-600 dark:text-rose-300',
-                  ].join(' ')}
-                >
-                  {formatCurrency(sale.profit)}
-                </p>
-              </div>
             </div>
+
+            {sale.status === 'reversed' ? (
+              <div className="mt-6 rounded-3xl border border-rose-200/80 bg-rose-50/70 p-5 dark:border-rose-500/20 dark:bg-rose-500/10">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-rose-700/80 dark:text-rose-300/80">
+                  Venda estornada
+                </p>
+                <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                      Estornada em
+                    </p>
+                    <p className="mt-2 text-sm font-medium text-slate-900 dark:text-slate-100">
+                      {sale.reversedAt ? formatDateTime(sale.reversedAt) : 'Data não informada'}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400 dark:text-slate-500">
+                      Motivo
+                    </p>
+                    <p className="mt-2 text-sm leading-6 text-slate-700 dark:text-slate-300">
+                      {sale.reversalReason || 'Motivo não informado.'}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-6 rounded-3xl border border-slate-200/80 bg-slate-50/70 p-5 dark:border-slate-800/80 dark:bg-slate-900/60">
+                <div className="flex flex-col gap-4">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.24em] text-amber-700/80 dark:text-amber-300/80">
+                      Estorno
+                    </p>
+                    <h3 className="mt-2 text-lg font-semibold text-slate-950 dark:text-slate-50">
+                      Reverter esta venda
+                    </h3>
+                    <p className="mt-2 text-sm leading-6 text-slate-600 dark:text-slate-400">
+                      Use esta ação apenas quando for necessário cancelar a operação e devolver o estoque dos produtos.
+                    </p>
+                  </div>
+
+                  {reverseFeedback ? (
+                    <FeedbackBanner type={reverseFeedback.type} message={reverseFeedback.message} />
+                  ) : null}
+
+                  {isReverseFormOpen ? (
+                    <div className="space-y-4">
+                      <label className="grid gap-2">
+                        <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                          Motivo do estorno
+                        </span>
+                        <textarea
+                          value={reverseReason}
+                          onChange={(event) => setReverseReason(event.target.value)}
+                          rows={4}
+                          maxLength={300}
+                          className="app-input min-h-[112px] resize-y"
+                          placeholder="Explique de forma breve o motivo do estorno."
+                        />
+                        <span className="text-xs text-slate-500 dark:text-slate-400">
+                          Campo obrigatório. Até 300 caracteres.
+                        </span>
+                      </label>
+
+                      {localReverseError ? (
+                        <FeedbackBanner type="error" message={localReverseError} />
+                      ) : null}
+
+                      <div className="flex flex-col gap-3 sm:flex-row sm:justify-end">
+                        <button
+                          type="button"
+                          disabled={isReversing}
+                          onClick={() => {
+                            setIsReverseFormOpen(false)
+                            setReverseReason('')
+                            setLocalReverseError(null)
+                          }}
+                          className="app-button-secondary w-full sm:w-auto"
+                        >
+                          Cancelar
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isReversing}
+                          onClick={() => void handleReverseSubmit()}
+                          className="w-full rounded-2xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500 disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto"
+                        >
+                          {isReversing ? 'Estornando...' : 'Confirmar estorno'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setIsReverseFormOpen(true)}
+                        className="w-full rounded-2xl bg-rose-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-rose-500 sm:w-auto"
+                      >
+                        Estornar venda
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
 
             <div className="mt-6 overflow-hidden rounded-3xl border border-slate-200/80 shadow-sm shadow-slate-950/5 dark:border-slate-800/80 dark:shadow-black/20">
               <div className="grid gap-4 border-b border-slate-200/80 bg-slate-50/80 px-4 py-4 sm:grid-cols-2 sm:px-6 xl:grid-cols-4 dark:border-slate-800/80 dark:bg-slate-900/70">

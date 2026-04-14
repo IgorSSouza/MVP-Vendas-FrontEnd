@@ -67,6 +67,9 @@ export const saleRepository = {
       id: generateMockId('sale'),
       items,
       paymentMethod: input.paymentMethod,
+      status: 'completed',
+      reversedAt: null,
+      reversalReason: null,
       installments,
       installmentAmount: total / installments,
       discount: input.discount,
@@ -79,6 +82,31 @@ export const saleRepository = {
     sales = [sale, ...sales]
 
     return clone(sale)
+  },
+
+  async reverse(id: string, reason: string) {
+    await delay()
+
+    const sale = sales.find((item) => item.id === id)
+
+    if (!sale) {
+      return null
+    }
+
+    if (sale.status === 'reversed') {
+      throw new Error('Venda já estornada.')
+    }
+
+    const reversedSale: Sale = {
+      ...sale,
+      status: 'reversed',
+      reversedAt: new Date().toISOString(),
+      reversalReason: reason,
+    }
+
+    sales = sales.map((item) => (item.id === id ? reversedSale : item))
+
+    return clone(reversedSale)
   },
 }
 

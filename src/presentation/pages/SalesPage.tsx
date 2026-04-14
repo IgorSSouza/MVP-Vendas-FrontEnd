@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 
-import type { Sale } from '@domain/entities'
+import type { Sale, SaleStatus } from '@domain/entities'
 import { PaymentMethod } from '@domain/enums'
 import { SaleDetailsPanel } from '@presentation/components/sales/SaleDetailsPanel'
 import { SalesTable } from '@presentation/components/sales/SalesTable'
@@ -12,9 +12,29 @@ import { getApiErrorMessage } from '@shared/api/http-client'
 import { salesApi, type SaleListItem } from '@shared/api/sales-api'
 
 type PaymentMethodFilter = 'all' | PaymentMethod
+type SaleStatusFilter = 'all' | SaleStatus
 type SortOption = 'created-desc' | 'created-asc' | 'total-desc' | 'total-asc'
+type Feedback = { type: 'success' | 'error'; message: string }
 
 const pageSizeOptions = [8, 12, 20]
+
+function mapSaleToListItem(sale: Sale): SaleListItem {
+  return {
+    id: sale.id,
+    createdAt: sale.createdAt,
+    paymentMethod: sale.paymentMethod,
+    status: sale.status,
+    reversedAt: sale.reversedAt ?? null,
+    reversalReason: sale.reversalReason ?? null,
+    installments: sale.installments,
+    installmentAmount: sale.installmentAmount,
+    subtotal: sale.subtotal,
+    discount: sale.discount,
+    total: sale.total,
+    profit: sale.profit,
+    itemCount: sale.items.length,
+  }
+}
 
 export function SalesPage() {
   const paymentOptions = [
@@ -25,20 +45,29 @@ export function SalesPage() {
     { value: PaymentMethod.CREDIT_CARD, label: 'Cartão de crédito' },
   ]
 
+  const statusOptions = [
+    { value: 'all' as const, label: 'Todos' },
+    { value: 'completed' as const, label: 'Concluídas' },
+    { value: 'reversed' as const, label: 'Estornadas' },
+  ]
+
   const [sales, setSales] = useState<SaleListItem[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [paymentFilter, setPaymentFilter] = useState<PaymentMethodFilter>('all')
+  const [statusFilter, setStatusFilter] = useState<SaleStatusFilter>('all')
   const [sortOption, setSortOption] = useState<SortOption>('created-desc')
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(pageSizeOptions[0])
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
-  const [feedback, setFeedback] = useState<{ type: 'error'; message: string } | null>(null)
+  const [feedback, setFeedback] = useState<Feedback | null>(null)
   const [selectedSale, setSelectedSale] = useState<Sale | null>(null)
   const [isDetailsOpen, setIsDetailsOpen] = useState(false)
   const [isDetailsLoading, setIsDetailsLoading] = useState(false)
   const [detailsError, setDetailsError] = useState<string | null>(null)
+  const [isReversing, setIsReversing] = useState(false)
+  const [reverseFeedback, setReverseFeedback] = useState<Feedback | null>(null)
 
   useEffect(() => {
     void loadSales()
@@ -48,14 +77,20 @@ export function SalesPage() {
     const visibleSales = sales.filter((sale) => {
       const normalizedSearch = search.trim().toLowerCase()
       const matchesSearch = !normalizedSearch || sale.id.toLowerCase().includes(normalizedSearch)
-
       const matchesPayment = paymentFilter === 'all' || sale.paymentMethod === paymentFilter
+      const matchesStatus = statusFilter === 'all' || sale.status === statusFilter
 
       const saleDate = new Date(sale.createdAt)
       const matchesStartDate = !startDate || saleDate >= new Date(`${startDate}T00:00:00`)
       const matchesEndDate = !endDate || saleDate <= new Date(`${endDate}T23:59:59`)
 
-      return matchesSearch && matchesPayment && matchesStartDate && matchesEndDate
+      return (
+        matchesSearch &&
+        matchesPayment &&
+        matchesStatus &&
+        matchesStartDate &&
+        matchesEndDate
+      )
     })
 
     return [...visibleSales].sort((left, right) => {
@@ -71,7 +106,7 @@ export function SalesPage() {
           return new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime()
       }
     })
-  }, [endDate, paymentFilter, sales, search, sortOption, startDate])
+  }, [endDate, paymentFilter, sales, search, sortOption, startDate, statusFilter])
 
   const totalFilteredSales = filteredSales.length
   const totalPages = Math.max(1, Math.ceil(totalFilteredSales / pageSize))
@@ -86,7 +121,7 @@ export function SalesPage() {
 
   useEffect(() => {
     setCurrentPage(1)
-  }, [search, paymentFilter, sortOption, pageSize, startDate, endDate])
+  }, [search, paymentFilter, statusFilter, sortOption, pageSize, startDate, endDate])
 
   useEffect(() => {
     if (currentPage > totalPages) {
@@ -116,6 +151,7 @@ export function SalesPage() {
     setIsDetailsLoading(true)
     setDetailsError(null)
     setSelectedSale(null)
+    setReverseFeedback(null)
 
     try {
       const saleDetails = await salesApi.getById(sale.id)
@@ -134,6 +170,34 @@ export function SalesPage() {
     setSelectedSale(null)
     setDetailsError(null)
     setIsDetailsLoading(false)
+    setIsReversing(false)
+    setReverseFeedback(null)
+  }
+
+  async function handleReverseSale(saleId: string, reason: string) {
+    setIsReversing(true)
+    setReverseFeedback(null)
+    setFeedback(null)
+
+    try {
+      const updatedSale = await salesApi.reverse(saleId, reason)
+      const updatedListItem = mapSaleToListItem(updatedSale)
+
+      setSelectedSale(updatedSale)
+      setSales((currentSales) =>
+        currentSales.map((item) => (item.id === saleId ? updatedListItem : item)),
+      )
+
+      const successMessage = 'Venda estornada com sucesso.'
+      setReverseFeedback({ type: 'success', message: successMessage })
+      setFeedback({ type: 'success', message: successMessage })
+    } catch (error) {
+      const message = getApiErrorMessage(error, 'Não foi possível estornar a venda.')
+      setReverseFeedback({ type: 'error', message })
+      throw error
+    } finally {
+      setIsReversing(false)
+    }
   }
 
   return (
@@ -160,7 +224,8 @@ export function SalesPage() {
               Localize, ordene e acompanhe as vendas com mais clareza
             </h2>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 dark:text-slate-400">
-              Busque pelo identificador, filtre por pagamento e período e acompanhe o histórico com uma listagem mais estável em tela dividida ou em dispositivos menores.
+              Busque pelo identificador, filtre por pagamento, status e período e acompanhe o
+              histórico com uma listagem mais estável em tela dividida ou em dispositivos menores.
             </p>
           </div>
 
@@ -172,7 +237,7 @@ export function SalesPage() {
           </div>
         </div>
 
-        <div className="mt-5 grid gap-4 md:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_220px_180px_180px]">
+        <div className="mt-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-[minmax(0,1fr)_220px_220px_180px_180px]">
           <label className="grid gap-2">
             <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Buscar</span>
             <input
@@ -184,7 +249,9 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Pagamento</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Pagamento
+            </span>
             <AppSelect
               value={paymentFilter}
               onChange={setPaymentFilter}
@@ -193,7 +260,20 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Data inicial</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Status
+            </span>
+            <AppSelect
+              value={statusFilter}
+              onChange={setStatusFilter}
+              options={statusOptions}
+            />
+          </label>
+
+          <label className="grid gap-2">
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Data inicial
+            </span>
             <input
               type="date"
               value={startDate}
@@ -203,7 +283,9 @@ export function SalesPage() {
           </label>
 
           <label className="grid gap-2">
-            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">Data final</span>
+            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+              Data final
+            </span>
             <input
               type="date"
               value={endDate}
@@ -244,8 +326,11 @@ export function SalesPage() {
         sale={selectedSale}
         isOpen={isDetailsOpen}
         isLoading={isDetailsLoading}
+        isReversing={isReversing}
         errorMessage={detailsError}
+        reverseFeedback={reverseFeedback}
         onClose={closeDetails}
+        onReverse={handleReverseSale}
       />
     </section>
   )

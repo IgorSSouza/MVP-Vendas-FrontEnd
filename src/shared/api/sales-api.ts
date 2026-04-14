@@ -1,4 +1,4 @@
-import type { Sale } from '@domain/entities'
+import type { Sale, SaleStatus } from '@domain/entities'
 import { PaymentMethod } from '@domain/enums'
 import type { SaleItemType } from '@domain/enums'
 import {
@@ -11,6 +11,9 @@ type SaleListItem = {
   id: string
   createdAt: string
   paymentMethod: PaymentMethod
+  status: SaleStatus
+  reversedAt?: string | null
+  reversalReason?: string | null
   installments: number
   installmentAmount: number
   subtotal: number
@@ -20,16 +23,18 @@ type SaleListItem = {
   itemCount: number
 }
 
-type ApiSaleListItem = Omit<SaleListItem, 'paymentMethod'> & {
+type ApiSaleListItem = Omit<SaleListItem, 'paymentMethod' | 'status'> & {
   paymentMethod: string | number
+  status?: string | number
 }
 
 type ApiSaleItem = Sale['items'][number] & {
   itemType: string | number
 }
 
-type ApiSale = Omit<Sale, 'paymentMethod' | 'items'> & {
+type ApiSale = Omit<Sale, 'paymentMethod' | 'items' | 'status'> & {
   paymentMethod: string | number
+  status?: string | number
   items: ApiSaleItem[]
 }
 
@@ -53,10 +58,21 @@ type ApiCreateSalePayload = {
   items: CreateSaleItemPayload[]
 }
 
+function normalizeSaleStatus(status: unknown): SaleStatus {
+  if (typeof status === 'string' && status.toLowerCase() === 'reversed') {
+    return 'reversed'
+  }
+
+  return 'completed'
+}
+
 function mapSaleListItem(apiSale: ApiSaleListItem): SaleListItem {
   return {
     ...apiSale,
     paymentMethod: normalizePaymentMethod(apiSale.paymentMethod),
+    status: normalizeSaleStatus(apiSale.status),
+    reversedAt: apiSale.reversedAt ?? null,
+    reversalReason: apiSale.reversalReason ?? null,
   }
 }
 
@@ -64,6 +80,9 @@ function mapSale(apiSale: ApiSale): Sale {
   return {
     ...apiSale,
     paymentMethod: normalizePaymentMethod(apiSale.paymentMethod),
+    status: normalizeSaleStatus(apiSale.status),
+    reversedAt: apiSale.reversedAt ?? null,
+    reversalReason: apiSale.reversalReason ?? null,
     items: apiSale.items.map((item) => ({
       ...item,
       itemType: normalizeSaleItemType(item.itemType),
@@ -105,6 +124,15 @@ export const salesApi = {
       method: 'POST',
       body: JSON.stringify(mapCreateSalePayload(payload)),
     })
+  },
+
+  async reverse(id: string, reason: string) {
+    await httpRequest<unknown>(`/api/sales/${id}/reverse`, {
+      method: 'PATCH',
+      body: JSON.stringify({ reason }),
+    })
+
+    return this.getById(id)
   },
 }
 
