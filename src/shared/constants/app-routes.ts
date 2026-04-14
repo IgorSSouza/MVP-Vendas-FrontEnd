@@ -6,6 +6,7 @@ export const appRoutes = {
   services: '/services',
   sales: '/sales',
   newSale: '/sales/new',
+  revenueReport: '/reports/revenue',
 } as const
 
 export const navigationItems = [
@@ -33,5 +34,10 @@ export const navigationItems = [
     label: 'Nova venda',
     to: appRoutes.newSale,
     description: 'Fluxo principal para registrar vendas',
+  },
+  {
+    label: 'Faturamento',
+    to: appRoutes.revenueReport,
+    description: 'Relatório simples por período',
   },
 ] as const

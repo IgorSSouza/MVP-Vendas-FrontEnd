@@ -11,6 +11,7 @@ import { DashboardPage } from '@presentation/pages/DashboardPage'
 import { LoginPage } from '@presentation/pages/LoginPage'
 import { NewSalePage } from '@presentation/pages/NewSalePage'
 import { ProductsPage } from '@presentation/pages/ProductsPage'
+import { RevenueReportPage } from '@presentation/pages/RevenueReportPage'
 import { SalesPage } from '@presentation/pages/SalesPage'
 import { ServicesPage } from '@presentation/pages/ServicesPage'
 import { SetupCompanyPage } from '@presentation/pages/SetupCompanyPage'
@@ -64,6 +65,10 @@ export const router = createBrowserRouter([
       {
         path: appRoutes.newSale,
         element: <NewSalePage />,
+      },
+      {
+        path: appRoutes.revenueReport,
+        element: <RevenueReportPage />,
       },
     ],
   },

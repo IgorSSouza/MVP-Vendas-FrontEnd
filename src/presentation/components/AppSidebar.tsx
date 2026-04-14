@@ -97,6 +97,20 @@ function PlusCircleIcon({ className = '' }: SidebarIconProps) {
   )
 }
 
+function ChartBarIcon({ className = '' }: SidebarIconProps) {
+  return (
+    <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden="true">
+      <path
+        d="M4.75 15.25V9.75M10 15.25V5.75M15.25 15.25V11.25M3.5 15.25H16.5"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
 function SunIcon({ className = '' }: SidebarIconProps) {
   return (
     <svg viewBox="0 0 20 20" fill="none" className={className} aria-hidden="true">
@@ -145,6 +159,7 @@ const navigationIcons = {
   [appRoutes.services]: WrenchIcon,
   [appRoutes.sales]: ReceiptIcon,
   [appRoutes.newSale]: PlusCircleIcon,
+  [appRoutes.revenueReport]: ChartBarIcon,
 } as const
 
 export function AppSidebar({
